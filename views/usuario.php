@@ -1,0 +1,705 @@
+<?php
+include '../includes/header.php';
+?>
+
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Gestión de Usuarios</h1>
+            <p class="text-sm text-gray-500 mt-1">Administra el acceso y roles del personal</p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <div class="relative flex-1 lg:w-80 group">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Buscar por nombre o username..." 
+                    class="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all shadow-sm group-hover:shadow"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400 group-focus-within:text-teal-500 transition-colors"></i>
+                </div>
+                <button 
+                    id="clear-search" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 hidden transition-colors"
+                >
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            
+            <button id="add-usuario-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 px-5 rounded-xl shadow-lg shadow-teal-500/30 transition-all duration-300 flex items-center justify-center whitespace-nowrap transform hover:-translate-y-0.5">
+                <i class="fas fa-user-plus mr-2"></i> Nuevo Usuario
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                <i class="fas fa-filter mr-2"></i>Filtros
+            </h3>
+            <button id="reset-filters" class="text-xs text-gray-500 hover:text-teal-600 font-medium transition-colors flex items-center">
+                Limpiar todo
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="relative">
+                <label class="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Rol</label>
+                <select id="rol-filter" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all appearance-none">
+                    <option value="">Todos los roles</option>
+                </select>
+                <div class="absolute right-3 top-[2.1rem] pointer-events-none text-gray-400">
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </div>
+            </div>
+            
+            <div class="relative">
+                <label class="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Estado</label>
+                <select id="estado-filter" class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all appearance-none">
+                    <option value="">Todos los estados</option>
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                </select>
+                <div class="absolute right-3 top-[2.1rem] pointer-events-none text-gray-400">
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div id="search-info" class="hidden mt-4 pt-4 border-t border-gray-100">
+            <p id="search-results-text" class="text-sm text-gray-600"></p>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden py-12 flex flex-col items-center justify-center text-teal-600">
+        <i class="fas fa-circle-notch fa-spin text-3xl mb-3"></i>
+        <p class="text-sm font-medium text-gray-500">Cargando usuarios...</p>
+    </div>
+
+    <!-- Table -->
+    <div id="usuarios-table-container" class="bg-white shadow-sm border border-gray-100 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-semibold">
+                        <th class="px-6 py-3">ID</th>
+                        <th class="px-6 py-3">Usuario</th>
+                        <th class="px-6 py-3">Email</th>
+                        <th class="px-6 py-3">Rol</th>
+                        <th class="px-6 py-3">Área</th>
+                        <th class="px-6 py-3">Estado</th>
+                        <th class="px-6 py-3 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usuarios-table-body" class="divide-y divide-gray-100"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Empty States -->
+    <div id="no-data-message" class="hidden bg-white shadow-sm border border-gray-100 rounded-2xl p-12 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-users text-3xl text-gray-300"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-1">No hay usuarios</h3>
+        <p class="text-gray-500 mb-6">Comienza registrando un nuevo usuario en el sistema.</p>
+        <button onclick="document.getElementById('add-usuario-btn').click()" class="text-teal-600 font-medium hover:text-teal-700">
+            Crear primer usuario &rarr;
+        </button>
+    </div>
+
+    <div id="no-search-results" class="hidden bg-white shadow-sm border border-gray-100 rounded-2xl p-12 text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-search text-3xl text-gray-300"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900 mb-1">Sin resultados</h3>
+        <p class="text-gray-500 mb-6">No encontramos usuarios que coincidan con tu búsqueda.</p>
+        <button id="clear-search-from-message" class="text-teal-600 font-medium hover:text-teal-700">
+            Limpiar filtros &rarr;
+        </button>
+    </div>
+</div>
+
+<!-- User Modal -->
+<div id="usuario-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900" id="modal-title">Nuevo Usuario</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="usuario-form" class="px-6 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <input type="hidden" id="usuario-id">
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Nombre Completo <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="usuario-nombre" required maxlength="100" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all" 
+                        placeholder="Nombre completo del usuario">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Username <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="usuario-username" required maxlength="50" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all" 
+                        placeholder="Usuario para login">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Email
+                    </label>
+                    <input type="email" id="usuario-email" maxlength="100" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all" 
+                        placeholder="correo@ejemplo.com">
+                    <p class="text-xs text-gray-500 mt-1">Email para recibir notificaciones del sistema.</p>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Contraseña <span id="password-required" class="text-red-500">*</span>
+                    </label>
+                    <input type="password" id="usuario-password" maxlength="100" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all" 
+                        placeholder="Contraseña de acceso">
+                    <p id="password-help" class="text-xs text-gray-500 mt-1">Requerida para usuarios nuevos.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                            Rol <span class="text-red-500">*</span>
+                        </label>
+                        <select id="usuario-rol" required 
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                            Estado
+                        </label>
+                        <select id="usuario-estado" 
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all">
+                            <option value="activo">Activo</option>
+                            <option value="inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                        Área Asignada
+                    </label>
+                    <select id="usuario-area" 
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all">
+                        <option value="">Sin área asignada</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="usuario-notificaciones" checked 
+                            class="w-4 h-4 text-teal-600 bg-gray-50 border-gray-300 rounded focus:ring-teal-500 focus:ring-2">
+                        <span class="ml-2 text-sm font-medium text-gray-700">Recibir notificaciones por email</span>
+                    </label>
+                    <p class="text-xs text-gray-500 mt-1 ml-6">El usuario recibirá emails sobre incidencias asignadas.</p>
+                </div>
+            </form>
+            
+            <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3 border-t border-gray-100">
+                <button type="button" id="close-modal-btn-2" class="w-full sm:w-auto px-6 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all">
+                    Cancelar
+                </button>
+                <button type="submit" id="save-btn" form="usuario-form" class="w-full sm:w-auto px-6 py-2.5 bg-teal-600 text-white font-medium rounded-xl hover:bg-teal-700 shadow-lg shadow-teal-500/30 transition-all flex items-center justify-center">
+                    <span id="save-btn-text">Guardar Usuario</span>
+                    <i id="save-btn-loading" class="fas fa-circle-notch fa-spin ml-2 hidden"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="delete-confirm-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full p-6 text-center">
+            <div class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+                <i class="fas fa-trash-alt text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">¿Eliminar usuario?</h3>
+            <p class="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer. El usuario perderá el acceso al sistema.</p>
+            
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button type="button" id="cancel-delete-btn" class="w-full sm:w-auto px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all">
+                    Cancelar
+                </button>
+                <button type="button" id="confirm-delete-btn" class="w-full sm:w-auto px-5 py-2.5 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 shadow-lg shadow-red-500/30 transition-all flex items-center justify-center">
+                    <span id="delete-btn-text">Sí, eliminar</span>
+                    <i id="delete-btn-loading" class="fas fa-circle-notch fa-spin ml-2 hidden"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+<script>
+    const API_URL = '../api/controllers/usuario.php';
+    
+    // State
+    let allUsuarios = []; 
+    let allRoles = [];
+    let allAreas = [];
+    let filteredUsuarios = []; 
+    let currentFilters = { search: '', rol: '', estado: '' };
+    let usuarioIdToDelete = null;
+    
+    // DOM Elements
+    const dom = {
+        tableBody: document.getElementById('usuarios-table-body'),
+        tableContainer: document.getElementById('usuarios-table-container'),
+        noData: document.getElementById('no-data-message'),
+        noSearch: document.getElementById('no-search-results'),
+        loading: document.getElementById('loading'),
+        search: document.getElementById('search-input'),
+        clearSearch: document.getElementById('clear-search'),
+        searchInfo: document.getElementById('search-info'),
+        searchResultsText: document.getElementById('search-results-text'),
+        filters: {
+            rol: document.getElementById('rol-filter'),
+            estado: document.getElementById('estado-filter'),
+            reset: document.getElementById('reset-filters'),
+            clearMsg: document.getElementById('clear-search-from-message')
+        },
+        modal: {
+            self: document.getElementById('usuario-modal'),
+            title: document.getElementById('modal-title'),
+            form: document.getElementById('usuario-form'),
+            close: document.getElementById('close-modal-btn'),
+            close2: document.getElementById('close-modal-btn-2'),
+            saveBtn: document.getElementById('save-btn'),
+            saveText: document.getElementById('save-btn-text'),
+            saveLoading: document.getElementById('save-btn-loading'),
+            passwordReq: document.getElementById('password-required'),
+            passwordHelp: document.getElementById('password-help'),
+            inputs: {
+                id: document.getElementById('usuario-id'),
+                nombre: document.getElementById('usuario-nombre'),
+                username: document.getElementById('usuario-username'),
+                email: document.getElementById('usuario-email'),
+                password: document.getElementById('usuario-password'),
+                rol: document.getElementById('usuario-rol'),
+                area: document.getElementById('usuario-area'),
+                estado: document.getElementById('usuario-estado'),
+                notificaciones: document.getElementById('usuario-notificaciones')
+            }
+        },
+        deleteModal: {
+            self: document.getElementById('delete-confirm-modal'),
+            confirm: document.getElementById('confirm-delete-btn'),
+            cancel: document.getElementById('cancel-delete-btn'),
+            text: document.getElementById('delete-btn-text'),
+            loading: document.getElementById('delete-btn-loading')
+        }
+    };
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        const colors = { success: 'bg-teal-500', error: 'bg-red-500', info: 'bg-blue-500' };
+        
+        toast.className = `${colors[type]} text-white px-6 py-4 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full flex items-center min-w-[300px] z-50`;
+        toast.innerHTML = `
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-3 text-lg"></i>
+            <span class="font-medium">${message}</span>
+        `;
+        
+        document.getElementById('toast-container').appendChild(toast);
+        
+        requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
+        setTimeout(() => {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Helpers
+    function setLoading(show) {
+        dom.loading.classList.toggle('hidden', !show);
+        dom.tableContainer.classList.toggle('hidden', show);
+        dom.noData.classList.add('hidden');
+        dom.noSearch.classList.add('hidden');
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+    }
+
+    function getRolBadgeColor(rol) {
+        switch(rol) {
+            case 'admin': return 'bg-purple-50 text-purple-700 border border-purple-100';
+            case 'tecnico': return 'bg-blue-50 text-blue-700 border border-blue-100';
+            case 'usuario': return 'bg-gray-50 text-gray-700 border border-gray-100';
+            default: return 'bg-gray-50 text-gray-700 border border-gray-100';
+        }
+    }
+
+    // Core Functions
+    function filterUsuarios() {
+        let filtered = allUsuarios;
+        
+        if (currentFilters.rol) filtered = filtered.filter(u => u.ID_ROL_USUARIO.toString() === currentFilters.rol);
+        if (currentFilters.estado) filtered = filtered.filter(u => u.estado === currentFilters.estado);
+        
+        if (currentFilters.search) {
+            const term = currentFilters.search.toLowerCase().trim();
+            filtered = filtered.filter(u => 
+                u.nombre_completo.toLowerCase().includes(term) ||
+                u.username.toLowerCase().includes(term)
+            );
+        }
+        
+        filteredUsuarios = filtered;
+        renderUsuarios(filteredUsuarios);
+        updateSearchInfo();
+    }
+
+    function updateSearchInfo() {
+        if (currentFilters.search || currentFilters.rol || currentFilters.estado) {
+            const count = filteredUsuarios.length;
+            let message = `Mostrando ${count} resultado${count !== 1 ? 's' : ''}`;
+            
+            const filters = [];
+            if (currentFilters.search) filters.push(`"${currentFilters.search}"`);
+            if (currentFilters.rol) {
+                const rol = allRoles.find(r => r.id_rol.toString() === currentFilters.rol);
+                if (rol) filters.push(`rol: ${rol.nombre_rol}`);
+            }
+            if (currentFilters.estado) filters.push(`estado: ${currentFilters.estado}`);
+            
+            if (filters.length > 0) message += ` para ${filters.join(', ')}`;
+            
+            dom.searchResultsText.textContent = message;
+            dom.searchInfo.classList.remove('hidden');
+        } else {
+            dom.searchInfo.classList.add('hidden');
+        }
+    }
+
+    function renderUsuarios(usuarios) {
+        dom.tableBody.innerHTML = '';
+        
+        if (usuarios.length > 0) {
+            dom.tableContainer.classList.remove('hidden');
+            dom.noData.classList.add('hidden');
+            dom.noSearch.classList.add('hidden');
+            
+            usuarios.forEach(u => {
+                const estadoBadge = u.estado === 'activo' 
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                    : 'bg-red-50 text-red-700 border border-red-100';
+                
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors duration-150 group';
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-xs font-mono font-bold text-gray-400 group-hover:text-teal-600">#${u.id_usuario}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-xs font-bold mr-3">
+                                ${u.nombre_completo.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-900">${escapeHtml(u.nombre_completo)}</div>
+                                <div class="text-xs text-gray-500 font-mono">@${escapeHtml(u.username)}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-700">${escapeHtml(u.email || '-')}</div>
+                        ${u.notificaciones_activas ? '<div class="text-xs text-teal-600 flex items-center mt-1"><i class="fas fa-bell text-[10px] mr-1"></i>Notificaciones activas</div>' : '<div class="text-xs text-gray-400">Sin notificaciones</div>'}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${getRolBadgeColor(u.nombre_rol)} px-2.5 py-0.5 rounded-full text-xs font-medium capitalize inline-flex items-center">
+                            ${escapeHtml(u.nombre_rol || 'Sin rol')}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${u.nombre_area ? 
+                            `<div class="text-sm text-gray-900">${escapeHtml(u.nombre_area)}</div>
+                             <div class="text-xs text-gray-500">${escapeHtml(u.nombre_sede || '')}</div>` 
+                            : '<span class="text-gray-400 text-xs italic">Sin área asignada</span>'}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${estadoBadge} px-2.5 py-0.5 rounded-full text-xs font-medium capitalize inline-flex items-center">
+                            <i class="fas fa-circle text-[6px] mr-1.5"></i>${u.estado}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button class="edit-btn p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" 
+                                data-id="${u.id_usuario}" 
+                                data-nombre="${escapeHtml(u.nombre_completo)}" 
+                                data-username="${escapeHtml(u.username)}"
+                                data-email="${escapeHtml(u.email || '')}"
+                                data-notificaciones="${u.notificaciones_activas || 0}"
+                                data-rol="${u.ID_ROL_USUARIO}"
+                                data-area="${u.id_area || ''}"
+                                data-estado="${u.estado}"
+                                title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="delete-btn p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" 
+                                data-id="${u.id_usuario}"
+                                title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                dom.tableBody.appendChild(row);
+            });
+        } else {
+            dom.tableContainer.classList.add('hidden');
+            if (currentFilters.search || currentFilters.rol || currentFilters.estado) {
+                dom.noSearch.classList.remove('hidden');
+                dom.noData.classList.add('hidden');
+            } else {
+                dom.noData.classList.remove('hidden');
+                dom.noSearch.classList.add('hidden');
+            }
+        }
+    }
+
+    // Data Loading
+    async function loadData() {
+        setLoading(true);
+        try {
+            const [usersRes, rolesRes, areasRes] = await Promise.all([
+                fetch(API_URL),
+                fetch(API_URL + '?action=get_roles'),
+                fetch(API_URL + '?action=get_areas')
+            ]);
+
+            const usersData = await usersRes.json();
+            const rolesData = await rolesRes.json();
+            const areasData = await areasRes.json();
+
+            allUsuarios = usersData.records || [];
+            allRoles = rolesData.roles || [];
+            allAreas = areasData.areas || [];
+
+            // Populate Selects
+            const rolOptions = allRoles.map(r => `<option value="${r.id_rol}">${escapeHtml(r.nombre_rol)}</option>`).join('');
+            dom.filters.rol.innerHTML = '<option value="">Todos los roles</option>' + rolOptions;
+            dom.modal.inputs.rol.innerHTML = '<option value="">Seleccionar...</option>' + rolOptions;
+
+            const areaOptions = allAreas.map(a => `<option value="${a.id_area}">${escapeHtml(a.area_completa)}</option>`).join('');
+            dom.modal.inputs.area.innerHTML = '<option value="">Sin área asignada</option>' + areaOptions;
+
+            filterUsuarios();
+
+        } catch (error) {
+            console.error(error);
+            showToast('Error al cargar datos', 'error');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Event Listeners
+    dom.search.addEventListener('input', (e) => {
+        currentFilters.search = e.target.value;
+        dom.clearSearch.classList.toggle('hidden', !e.target.value);
+        filterUsuarios();
+    });
+
+    dom.clearSearch.addEventListener('click', () => {
+        dom.search.value = '';
+        currentFilters.search = '';
+        dom.clearSearch.classList.add('hidden');
+        filterUsuarios();
+    });
+
+    dom.filters.rol.addEventListener('change', (e) => {
+        currentFilters.rol = e.target.value;
+        filterUsuarios();
+    });
+
+    dom.filters.estado.addEventListener('change', (e) => {
+        currentFilters.estado = e.target.value;
+        filterUsuarios();
+    });
+
+    const clearAllFilters = () => {
+        dom.search.value = '';
+        dom.filters.rol.value = '';
+        dom.filters.estado.value = '';
+        currentFilters = { search: '', rol: '', estado: '' };
+        dom.clearSearch.classList.add('hidden');
+        filterUsuarios();
+    };
+
+    dom.filters.reset.addEventListener('click', clearAllFilters);
+    dom.filters.clearMsg.addEventListener('click', clearAllFilters);
+
+    // Modal Actions
+    document.getElementById('add-usuario-btn').addEventListener('click', () => {
+        dom.modal.form.reset();
+        dom.modal.inputs.id.value = '';
+        dom.modal.inputs.estado.value = 'activo';
+        dom.modal.title.textContent = 'Nuevo Usuario';
+        
+        dom.modal.inputs.password.required = true;
+        dom.modal.passwordReq.style.display = 'inline';
+        dom.modal.passwordHelp.textContent = 'Requerida para usuarios nuevos.';
+        
+        dom.modal.self.classList.remove('hidden');
+    });
+
+    [dom.modal.close, dom.modal.close2].forEach(btn => 
+        btn.addEventListener('click', () => dom.modal.self.classList.add('hidden'))
+    );
+
+    dom.modal.form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const id = dom.modal.inputs.id.value;
+        const password = dom.modal.inputs.password.value;
+        
+        if (!id && !password) {
+            showToast('La contraseña es requerida', 'error');
+            return;
+        }
+
+        const formData = {
+            nombre_completo: dom.modal.inputs.nombre.value,
+            username: dom.modal.inputs.username.value,
+            email: dom.modal.inputs.email.value || null,
+            notificaciones_activas: dom.modal.inputs.notificaciones.checked ? 1 : 0,
+            ID_ROL_USUARIO: parseInt(dom.modal.inputs.rol.value),
+            estado: dom.modal.inputs.estado.value
+        };
+
+        if (password) formData.password = password;
+        if (dom.modal.inputs.area.value) formData.id_area = parseInt(dom.modal.inputs.area.value);
+        if (id) formData.id_usuario = parseInt(id);
+
+        dom.modal.saveBtn.disabled = true;
+        dom.modal.saveText.textContent = 'Guardando...';
+        dom.modal.saveLoading.classList.remove('hidden');
+
+        try {
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(API_URL, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                showToast(result.message || 'Usuario guardado', 'success');
+                dom.modal.self.classList.add('hidden');
+                loadData();
+            } else {
+                throw new Error(result.message || 'Error al guardar');
+            }
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            dom.modal.saveBtn.disabled = false;
+            dom.modal.saveText.textContent = 'Guardar Usuario';
+            dom.modal.saveLoading.classList.add('hidden');
+        }
+    });
+
+    // Table Actions
+    dom.tableBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        
+        if (btn.classList.contains('edit-btn')) {
+            dom.modal.inputs.id.value = btn.dataset.id;
+            dom.modal.inputs.nombre.value = btn.dataset.nombre;
+            dom.modal.inputs.username.value = btn.dataset.username;
+            dom.modal.inputs.email.value = btn.dataset.email;
+            dom.modal.inputs.notificaciones.checked = btn.dataset.notificaciones === '1';
+            dom.modal.inputs.rol.value = btn.dataset.rol;
+            dom.modal.inputs.area.value = btn.dataset.area;
+            dom.modal.inputs.estado.value = btn.dataset.estado;
+            dom.modal.inputs.password.value = '';
+            
+            dom.modal.title.textContent = 'Editar Usuario';
+            dom.modal.inputs.password.required = false;
+            dom.modal.passwordReq.style.display = 'none';
+            dom.modal.passwordHelp.textContent = 'Dejar vacía para mantener la actual.';
+            
+            dom.modal.self.classList.remove('hidden');
+        }
+        
+        if (btn.classList.contains('delete-btn')) {
+            usuarioIdToDelete = btn.dataset.id;
+            dom.deleteModal.self.classList.remove('hidden');
+        }
+    });
+
+    // Delete Actions
+    dom.deleteModal.cancel.addEventListener('click', () => dom.deleteModal.self.classList.add('hidden'));
+    
+    dom.deleteModal.confirm.addEventListener('click', async () => {
+        if (!usuarioIdToDelete) return;
+        
+        dom.deleteModal.confirm.disabled = true;
+        dom.deleteModal.loading.classList.remove('hidden');
+        
+        try {
+            const res = await fetch(API_URL, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_usuario: parseInt(usuarioIdToDelete) })
+            });
+            const result = await res.json();
+            
+            if (res.ok) {
+                showToast('Usuario eliminado', 'success');
+                dom.deleteModal.self.classList.add('hidden');
+                loadData();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            dom.deleteModal.confirm.disabled = false;
+            dom.deleteModal.loading.classList.add('hidden');
+        }
+    });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', loadData);
+</script>
+
+<?php include '../includes/footer.php'; ?>

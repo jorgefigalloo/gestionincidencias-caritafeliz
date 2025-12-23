@@ -1,0 +1,18 @@
+# Permitir acceso CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+</IfModule>
+
+# Permitir acceso a archivos PHP
+<FilesMatch "\.(php)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Habilitar mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/controllers/
+</IfModule>

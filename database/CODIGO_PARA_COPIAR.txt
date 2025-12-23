@@ -1,0 +1,60 @@
+/* ============================================
+   COPIA Y PEGA ESTE CÓDIGO
+   ============================================ */
+
+// PRIMERA UBICACIÓN: Línea 38-39
+// BUSCA ESTO:
+                    i.estado,
+                    i.prioridad,
+
+// REEMPLAZA CON ESTO (copia todo desde i.estado hasta i.prioridad):
+                    i.estado,
+                    i.confirmacion_usuario,
+                    i.comentario_usuario,
+                    i.fecha_confirmacion,
+                    i.prioridad,
+
+
+/* ============================================
+   SEGUNDA UBICACIÓN: Línea ~362
+   ============================================ */
+
+// BUSCA ESTO (segunda vez en el archivo):
+                    i.estado,
+                    i.prioridad,
+
+// REEMPLAZA CON ESTO (el mismo código):
+                    i.estado,
+                    i.confirmacion_usuario,
+                    i.comentario_usuario,
+                    i.fecha_confirmacion,
+                    i.prioridad,
+
+
+/* ============================================
+   INSTRUCCIONES:
+   ============================================
+   
+   1. Abre: c:\xampp\htdocs\gestion-incidencias\api\models\Incidencia.php
+   
+   2. Presiona Ctrl + H (Buscar y Reemplazar)
+   
+   3. En "Buscar" pega:
+                    i.estado,
+                    i.prioridad,
+   
+   4. En "Reemplazar" pega:
+                    i.estado,
+                    i.confirmacion_usuario,
+                    i.comentario_usuario,
+                    i.fecha_confirmacion,
+                    i.prioridad,
+   
+   5. Haz clic en "Reemplazar todo" (Replace All)
+      Debería reemplazar 2 ocurrencias
+   
+   6. Guarda el archivo (Ctrl + S)
+   
+   7. Recarga tu dashboard en el navegador (F5)
+   
+   ============================================ */

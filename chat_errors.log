@@ -1,0 +1,238 @@
+[07-Nov-2025 16:05:50 America/New_York] Auth: Sesión PHP válida para usuario 1
+[07-Nov-2025 16:05:50 America/New_York] Enviando mensaje a Gemini: hola
+[07-Nov-2025 16:05:50 America/New_York] Gemini: Enviando request
+[07-Nov-2025 16:05:50 America/New_York] Gemini: HTTP Code = 200
+[07-Nov-2025 16:05:50 America/New_York] Respuesta exitosa de Gemini
+[07-Nov-2025 16:06:54 America/New_York] Auth: Sesión PHP válida para usuario 1
+[07-Nov-2025 16:06:54 America/New_York] Enviando mensaje a Gemini: hola
+[07-Nov-2025 16:06:54 America/New_York] Gemini: Enviando request
+[07-Nov-2025 16:06:54 America/New_York] Gemini: HTTP Code = 200
+[07-Nov-2025 16:06:54 America/New_York] Respuesta exitosa de Gemini
+[07-Nov-2025 16:08:39 America/New_York] Auth: Sesión PHP válida para usuario 2
+[07-Nov-2025 16:08:39 America/New_York] Enviando mensaje a Gemini: hoal
+[07-Nov-2025 16:08:39 America/New_York] Gemini: Enviando request
+[07-Nov-2025 16:08:41 America/New_York] Gemini: HTTP Code = 200
+[07-Nov-2025 16:08:41 America/New_York] Respuesta exitosa de Gemini
+[07-Nov-2025 16:08:59 America/New_York] Auth: Sesión PHP válida para usuario 3
+[07-Nov-2025 16:08:59 America/New_York] Enviando mensaje a Gemini: holaaa
+[07-Nov-2025 16:08:59 America/New_York] Gemini: Enviando request
+[07-Nov-2025 16:09:00 America/New_York] Gemini: HTTP Code = 200
+[07-Nov-2025 16:09:00 America/New_York] Respuesta exitosa de Gemini
+[10-Nov-2025 08:48:31 America/New_York] Auth: Sesión PHP válida para usuario 1
+[10-Nov-2025 08:48:31 America/New_York] Enviando mensaje a Gemini: hola
+[10-Nov-2025 08:48:31 America/New_York] Gemini: Enviando request
+[10-Nov-2025 08:48:32 America/New_York] Gemini: HTTP Code = 200
+[10-Nov-2025 08:48:32 America/New_York] Respuesta exitosa de Gemini
+[10-Nov-2025 18:44:13 America/New_York] Auth: Sesión PHP válida para usuario 1
+[10-Nov-2025 18:44:13 America/New_York] Enviando mensaje a Gemini: hola
+[10-Nov-2025 18:44:13 America/New_York] Gemini: Enviando request
+[10-Nov-2025 18:44:13 America/New_York] Gemini: HTTP Code = 200
+[10-Nov-2025 18:44:13 America/New_York] Respuesta exitosa de Gemini
+[10-Nov-2025 20:27:24 America/New_York] Auth: Sesión PHP válida para usuario 3
+[10-Nov-2025 20:27:24 America/New_York] Enviando mensaje a Gemini: hola
+[10-Nov-2025 20:27:24 America/New_York] Gemini: Enviando request
+[10-Nov-2025 20:27:25 America/New_York] Gemini: HTTP Code = 200
+[10-Nov-2025 20:27:25 America/New_York] Respuesta exitosa de Gemini
+[10-Nov-2025 20:27:27 America/New_York] Auth: Sesión PHP válida para usuario 3
+[10-Nov-2025 20:27:27 America/New_York] Enviando mensaje a Gemini: que ia eres
+[10-Nov-2025 20:27:27 America/New_York] Gemini: Enviando request
+[10-Nov-2025 20:27:28 America/New_York] Gemini: HTTP Code = 200
+[10-Nov-2025 20:27:28 America/New_York] Respuesta exitosa de Gemini
+[17-Nov-2025 16:42:17 America/New_York] Auth: Sesión PHP válida para usuario 1
+[17-Nov-2025 16:42:17 America/New_York] Enviando mensaje a Gemini: hola
+[17-Nov-2025 16:42:17 America/New_York] Gemini: Enviando request
+[17-Nov-2025 16:42:18 America/New_York] Gemini: HTTP Code = 200
+[17-Nov-2025 16:42:18 America/New_York] Respuesta exitosa de Gemini
+[17-Nov-2025 18:50:58 America/New_York] Auth: Sesión PHP válida para usuario 2
+[17-Nov-2025 18:50:58 America/New_York] Enviando mensaje a Gemini: hola
+[17-Nov-2025 18:50:58 America/New_York] Gemini: Enviando request
+[17-Nov-2025 18:50:59 America/New_York] Gemini: HTTP Code = 200
+[17-Nov-2025 18:50:59 America/New_York] Respuesta exitosa de Gemini
+[17-Nov-2025 23:05:26 America/New_York] Auth: Sesión PHP válida para usuario 2
+[17-Nov-2025 23:05:26 America/New_York] Enviando mensaje a Gemini: hola
+[17-Nov-2025 23:05:26 America/New_York] Gemini: Enviando request
+[17-Nov-2025 23:05:27 America/New_York] Gemini: HTTP Code = 200
+[17-Nov-2025 23:05:27 America/New_York] Respuesta exitosa de Gemini
+[17-Nov-2025 23:06:55 America/New_York] Auth: Sesión PHP válida para usuario 3
+[17-Nov-2025 23:06:55 America/New_York] Enviando mensaje a Gemini: hola
+[17-Nov-2025 23:06:55 America/New_York] Gemini: Enviando request
+[17-Nov-2025 23:06:59 America/New_York] Gemini: HTTP Code = 200
+[17-Nov-2025 23:06:59 America/New_York] Respuesta exitosa de Gemini
+[19-Nov-2025 15:51:15 America/New_York] Auth: Sesión PHP válida para usuario 1
+[19-Nov-2025 15:51:15 America/New_York] Enviando mensaje a Gemini: resumen de cuantas incidencias hay
+[19-Nov-2025 15:51:15 America/New_York] Gemini: Enviando request
+[19-Nov-2025 15:51:17 America/New_York] Gemini: HTTP Code = 200
+[19-Nov-2025 15:51:17 America/New_York] Respuesta exitosa de Gemini
+[19-Nov-2025 16:24:33 America/New_York] Auth: Sesión PHP válida para usuario 1
+[19-Nov-2025 16:24:33 America/New_York] Enviando mensaje a Gemini: hola
+[19-Nov-2025 16:24:33 America/New_York] Gemini: Enviando request
+[19-Nov-2025 16:24:34 America/New_York] Gemini: HTTP Code = 200
+[19-Nov-2025 16:24:34 America/New_York] Respuesta exitosa de Gemini
+[19-Nov-2025 16:24:44 America/New_York] Auth: Sesión PHP válida para usuario 1
+[19-Nov-2025 16:24:44 America/New_York] Enviando mensaje a Gemini: hola quiero ver cuantas incidencias registradas ha
+[19-Nov-2025 16:24:44 America/New_York] Gemini: Enviando request
+[19-Nov-2025 16:24:46 America/New_York] Gemini: HTTP Code = 200
+[19-Nov-2025 16:24:46 America/New_York] Respuesta exitosa de Gemini
+[01-Dec-2025 15:54:43 America/New_York] Auth: Sesión PHP válida para usuario 3
+[01-Dec-2025 15:54:43 America/New_York] Enviando mensaje a Gemini: hola
+[01-Dec-2025 15:54:43 America/New_York] Gemini: Enviando request
+[01-Dec-2025 15:54:43 America/New_York] Gemini: HTTP Code = 200
+[01-Dec-2025 15:54:43 America/New_York] Respuesta exitosa de Gemini
+[18-Dec-2025 18:41:26 America/New_York] Auth: Sesión PHP válida para usuario 1
+[18-Dec-2025 18:41:26 America/New_York] Enviando mensaje a Gemini: hola
+[18-Dec-2025 18:41:26 America/New_York] Gemini: Enviando request
+[18-Dec-2025 18:41:26 America/New_York] Gemini: HTTP Code = 429
+[18-Dec-2025 18:41:26 America/New_York] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[18-Dec-2025 18:41:26 America/New_York] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[18-Dec-2025 18:41:42 America/New_York] Auth: Sesión PHP válida para usuario 1
+[18-Dec-2025 18:41:42 America/New_York] Enviando mensaje a Gemini: holaa
+[18-Dec-2025 18:41:42 America/New_York] Gemini: Enviando request
+[18-Dec-2025 18:41:42 America/New_York] Gemini: HTTP Code = 429
+[18-Dec-2025 18:41:42 America/New_York] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[18-Dec-2025 18:41:42 America/New_York] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[18-Dec-2025 18:41:53 America/New_York] Auth: Sesión PHP válida para usuario 1
+[18-Dec-2025 18:41:53 America/New_York] Enviando mensaje a Gemini: holaa
+[18-Dec-2025 18:41:53 America/New_York] Gemini: Enviando request
+[18-Dec-2025 18:41:53 America/New_York] Gemini: HTTP Code = 429
+[18-Dec-2025 18:41:53 America/New_York] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[18-Dec-2025 18:41:53 America/New_York] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 18:33:02 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 18:33:02 Europe/Berlin] Enviando mensaje a Gemini: hola
+[19-Dec-2025 18:33:02 Europe/Berlin] Gemini: Enviando request
+[19-Dec-2025 18:33:03 Europe/Berlin] Gemini: HTTP Code = 429
+[19-Dec-2025 18:33:03 Europe/Berlin] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[19-Dec-2025 18:33:03 Europe/Berlin] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 22:55:49 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 22:55:49 Europe/Berlin] Enviando mensaje a Gemini: hola
+[19-Dec-2025 22:55:49 Europe/Berlin] Gemini: Enviando request
+[19-Dec-2025 22:55:50 Europe/Berlin] Gemini: HTTP Code = 429
+[19-Dec-2025 22:55:50 Europe/Berlin] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[19-Dec-2025 22:55:50 Europe/Berlin] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 23:03:32 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:03:32 Europe/Berlin] Enviando mensaje a Gemini: hola
+[19-Dec-2025 23:03:32 Europe/Berlin] Gemini: Enviando request
+[19-Dec-2025 23:03:33 Europe/Berlin] Gemini: HTTP Code = 429
+[19-Dec-2025 23:03:33 Europe/Berlin] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[19-Dec-2025 23:03:33 Europe/Berlin] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 23:06:54 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:06:54 Europe/Berlin] Enviando mensaje a Gemini: hola
+[19-Dec-2025 23:06:54 Europe/Berlin] Gemini: Enviando request
+[19-Dec-2025 23:06:55 Europe/Berlin] Gemini: HTTP Code = 429
+[19-Dec-2025 23:06:55 Europe/Berlin] Gemini: Error HTTP 429 - {
+  "error": {
+    "code": 429,
+    "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-a
+[19-Dec-2025 23:06:55 Europe/Berlin] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 23:10:48 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:10:48 Europe/Berlin] Enviando mensaje a Gemini: hola
+[19-Dec-2025 23:10:48 Europe/Berlin] Gemini: Enviando request
+[19-Dec-2025 23:10:49 Europe/Berlin] Gemini: HTTP Code = 404
+[19-Dec-2025 23:10:49 Europe/Berlin] Gemini: Error HTTP 404 - {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available model
+[19-Dec-2025 23:10:49 Europe/Berlin] Error en respuesta de Gemini: El asistente no está disponible en este momento
+[19-Dec-2025 23:28:26 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:28:26 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:28:36 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:28:36 Europe/Berlin] Procesando mensaje local: tengo problemas con la impresora
+[19-Dec-2025 23:29:11 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:29:11 Europe/Berlin] Procesando mensaje local: sale error de conexion pero esta encendida y conec
+[19-Dec-2025 23:29:49 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:29:49 Europe/Berlin] Procesando mensaje local: gracias, cuales son mis incidencias
+[19-Dec-2025 23:31:41 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:31:41 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:31:47 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:31:47 Europe/Berlin] Procesando mensaje local: cuales son mis incidencias
+[19-Dec-2025 23:35:51 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:35:51 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:36:02 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:36:02 Europe/Berlin] Procesando mensaje local: cuantas incidencias abiertas hay
+[19-Dec-2025 23:36:39 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:36:39 Europe/Berlin] Procesando mensaje local: cuantas incidencias abiertas hay, o cuantos report
+[19-Dec-2025 23:37:52 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:37:52 Europe/Berlin] Procesando mensaje local: cuantas incidencias abiertas hay, o cuantos report
+[19-Dec-2025 23:38:01 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:38:01 Europe/Berlin] Procesando mensaje local: cual es la q esta cerraada
+[19-Dec-2025 23:39:01 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:39:01 Europe/Berlin] Procesando mensaje local: cuantas incidencias abiertas hay, o cuantos report
+[19-Dec-2025 23:39:09 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:39:09 Europe/Berlin] Procesando mensaje local: cual es la que esta cerrada
+[19-Dec-2025 23:39:18 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:39:18 Europe/Berlin] Procesando mensaje local: y las que estan abiertas cuales son
+[19-Dec-2025 23:39:33 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:39:33 Europe/Berlin] Procesando mensaje local: y en proceso
+[19-Dec-2025 23:41:28 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:41:28 Europe/Berlin] Procesando mensaje local: cuantas incidencias abiertas hay, o cuantos report
+[19-Dec-2025 23:41:34 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:41:34 Europe/Berlin] Procesando mensaje local: cuales estan en proceso
+[19-Dec-2025 23:41:44 Europe/Berlin] Auth: Sesión PHP válida para usuario 1
+[19-Dec-2025 23:41:44 Europe/Berlin] Procesando mensaje local: ahora ayudame
+[19-Dec-2025 23:42:33 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:42:33 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:42:35 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:42:35 Europe/Berlin] Procesando mensaje local: ayudame
+[19-Dec-2025 23:42:46 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:42:46 Europe/Berlin] Procesando mensaje local: mis tickets
+[19-Dec-2025 23:43:16 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:43:16 Europe/Berlin] Procesando mensaje local: cual ticket esta solucionado
+[19-Dec-2025 23:46:03 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:46:03 Europe/Berlin] Procesando mensaje local: cual ticket esta solucionado
+[19-Dec-2025 23:49:07 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:49:07 Europe/Berlin] Procesando mensaje local: hola que tal
+[19-Dec-2025 23:49:13 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:49:13 Europe/Berlin] Procesando mensaje local: tengo miedo
+[19-Dec-2025 23:49:24 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:49:24 Europe/Berlin] Procesando mensaje local: mis tickets
+[19-Dec-2025 23:49:36 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:49:36 Europe/Berlin] Procesando mensaje local: tengo problemas con la mesa
+[19-Dec-2025 23:49:51 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:49:51 Europe/Berlin] Procesando mensaje local: mi pc esta lenta
+[19-Dec-2025 23:50:11 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:50:11 Europe/Berlin] Procesando mensaje local: pero esta lenta la pc pero los programas no el int
+[19-Dec-2025 23:51:16 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:51:16 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:51:17 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:51:17 Europe/Berlin] Procesando mensaje local: pero esta lenta la pc pero los programas no el int
+[19-Dec-2025 23:51:35 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:51:35 Europe/Berlin] Procesando mensaje local: programas lentos
+[19-Dec-2025 23:57:15 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:57:15 Europe/Berlin] Procesando mensaje local: hola
+[19-Dec-2025 23:57:17 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:57:17 Europe/Berlin] Procesando mensaje local: como estas
+[19-Dec-2025 23:57:25 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:57:25 Europe/Berlin] Procesando mensaje local: no abre word
+[19-Dec-2025 23:57:39 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[19-Dec-2025 23:57:39 Europe/Berlin] Procesando mensaje local: como activo el modo seguro
+[20-Dec-2025 00:05:03 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:05:03 Europe/Berlin] Procesando mensaje local: holaa
+[20-Dec-2025 00:05:58 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:05:58 Europe/Berlin] Procesando mensaje local: mi pc esta lenta , el disco esta lleno, como borro
+[20-Dec-2025 00:07:12 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:07:12 Europe/Berlin] Procesando mensaje local: mi pc esta lenta , el disco esta lleno, como borro
+[20-Dec-2025 00:07:21 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:07:21 Europe/Berlin] Procesando mensaje local: dime los pasos
+[20-Dec-2025 00:12:06 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:12:06 Europe/Berlin] Procesando mensaje local: como borro los temporales
+[20-Dec-2025 00:12:12 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:12:12 Europe/Berlin] Procesando mensaje local: gracias
+[20-Dec-2025 00:12:14 Europe/Berlin] Auth: Sesión PHP válida para usuario 3
+[20-Dec-2025 00:12:14 Europe/Berlin] Procesando mensaje local: hola

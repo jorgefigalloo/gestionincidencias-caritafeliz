@@ -1,0 +1,15 @@
+/* Estilos para el modal */
+#sede-modal {
+    transition: all 0.3s ease-in-out;
+}
+
+#sede-modal .bg-white {
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+#sede-modal:not(.hidden) .bg-white {
+    transform: translateY(0);
+    opacity: 1;
+}
