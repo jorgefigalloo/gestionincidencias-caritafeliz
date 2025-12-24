@@ -240,28 +240,48 @@ class AppEmailNotifier {
     private function generarMensajeAsignacion($data) {
         return "
         <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
                     Nueva Incidencia Asignada
                 </h2>
                 
                 <p>Hola <strong>{$data['nombre_completo']}</strong>,</p>
+                <p>Se te ha asignado una nueva incidencia para su atención:</p>
                 
-                <p>Se te ha asignado una nueva incidencia:</p>
-                
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Descripción:</strong> {$data['descripcion']}</p>
-                    <p><strong>Prioridad:</strong> <span style='color: " . $this->getColorPrioridad($data['prioridad']) . ";'>" . strtoupper($data['prioridad']) . "</span></p>
-                    <p><strong>Reportado por:</strong> {$data['nombre_reporta']}</p>
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Prioridad:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: " . $this->getColorPrioridad($data['prioridad']) . "; font-weight: bold;'>" . strtoupper($data['prioridad']) . "</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Reportado por:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['nombre_reporta']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Descripción:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['descripcion']}</td>
+                        </tr>
+                    </table>
                 </div>
                 
-                <p>Por favor, revisa la incidencia en el sistema y comienza a trabajar en ella.</p>
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Ir al Sistema</a>
+                </div>
                 
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
                 </p>
             </div>
         </body>
@@ -275,32 +295,52 @@ class AppEmailNotifier {
         
         return "
         <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
-                    Actualización de tu Incidencia
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    Actualización de Incidencia
                 </h2>
                 
                 <p>Hola <strong>{$data['nombre']}</strong>,</p>
+                <p>El estado de tu incidencia ha sido actualizado:</p>
                 
-                <p>Tu incidencia ha sido actualizada:</p>
-                
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Nuevo Estado:</strong> <span style='color: {$colorEstado}; font-weight: bold;'>{$estadoTexto}</span></p>
-                    " . ($comentario ? "<p><strong>Comentario del técnico:</strong><br>{$comentario}</p>" : "") . "
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Nuevo Estado:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: {$colorEstado}; font-weight: bold; background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px;'>{$estadoTexto}</span>
+                            </td>
+                        </tr>
+                        " . ($comentario ? "
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Comentario:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-style: italic;'>{$comentario}</td>
+                        </tr>" : "") . "
+                    </table>
                 </div>
                 
                 " . ($nuevoEstado === 'cerrada' ? "
-                <div style='background: #D1FAE5; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 0;'><strong>&#x2705; Tu incidencia ha sido resuelta y cerrada.</strong></p>
-                    <p style='margin: 10px 0 0 0;'>Si el problema persiste, por favor reporta una nueva incidencia.</p>
+                <div style='background: #ECFDF5; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0; margin: 20px 0; color: #065F46;'>
+                    <p style='margin: 0; text-align: center;'><strong>✅ Incidencia Resuelta</strong></p>
+                    <p style='margin: 5px 0 0 0; font-size: 14px; text-align: center;'>Si tienes algún otro problema, no dudes en reportarlo.</p>
                 </div>
                 " : "") . "
                 
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Ver Detalles</a>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
                 </p>
             </div>
         </body>
@@ -309,42 +349,62 @@ class AppEmailNotifier {
     }
     
     private function generarMensajeConfirmacion($data, $confirmacion, $comentarioUsuario) {
-        $icono = $confirmacion === 'solucionado' ? '[SOLUCIONADO]' : '[NO SOLUCIONADO]';
+        $icono = $confirmacion === 'solucionado' ? '✅' : '❌';
         $color = $confirmacion === 'solucionado' ? '#10B981' : '#EF4444';
         $texto = $confirmacion === 'solucionado' ? 'SOLUCIONADO' : 'NO SOLUCIONADO';
+        $bgTitulo = $confirmacion === 'solucionado' ? '#ECFDF5' : '#FEF2F2';
+        $colorTitulo = $confirmacion === 'solucionado' ? '#047857' : '#B91C1C';
         
         return "
         <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
-                    {$icono} Confirmación del Usuario
-                </h2>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <div style='background-color: {$bgTitulo}; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;'>
+                    <h2 style='color: {$colorTitulo}; margin: 0;'>
+                        {$icono} Confirmación de Usuario
+                    </h2>
+                </div>
                 
                 <p>Hola <strong>{$data['nombre_completo']}</strong>,</p>
+                <p>El usuario ha enviado una confirmación sobre la solución propuesta:</p>
                 
-                <p>El usuario ha confirmado el estado de la incidencia:</p>
-                
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Confirmación:</strong> <span style='color: {$color}; font-weight: bold;'>{$texto}</span></p>
-                    " . ($comentarioUsuario ? "<p><strong>Comentario del usuario:</strong><br>{$comentarioUsuario}</p>" : "") . "
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Estado Confirmado:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: {$color}; font-weight: bold;'>{$texto}</span>
+                            </td>
+                        </tr>
+                        " . ($comentarioUsuario ? "
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Comentario:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-style: italic;'>{$comentarioUsuario}</td>
+                        </tr>" : "") . "
+                    </table>
                 </div>
                 
                 " . ($confirmacion === 'no_solucionado' ? "
-                <div style='background: #FEE2E2; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 0;'><strong>ATENCIÓN: El usuario reporta que el problema NO está solucionado.</strong></p>
-                    <p style='margin: 10px 0 0 0;'>Por favor, revisa la incidencia nuevamente.</p>
+                <div style='background: #FEF2F2; padding: 15px; border-radius: 8px; border: 1px solid #FECACA; margin: 20px 0; color: #B91C1C;'>
+                    <p style='margin: 0; text-align: center;'><strong>⚠️ Atención Requerida</strong></p>
+                    <p style='margin: 5px 0 0 0; font-size: 14px; text-align: center;'>El usuario indica que el problema persiste. Por favor revisa la incidencia.</p>
                 </div>
-                " : "
-                <div style='background: #D1FAE5; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 0;'><strong>¡Excelente trabajo! El usuario confirma que el problema está resuelto.</strong></p>
-                </div>
-                ") . "
+                " : "") . "
                 
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Gestionar Incidencia</a>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
                 </p>
             </div>
         </body>
@@ -456,78 +516,6 @@ class AppEmailNotifier {
             error_log("EmailNotifier::notificarIncidenciaCritica: " . $e->getMessage());
             return false;
         }
-    }
-    
-    /**
-     * Generar mensaje HTML para nueva incidencia
-     */
-    private function generarMensajeNuevaIncidencia($data) {
-        return "
-        <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
-                    Nueva Incidencia Reportada
-                </h2>
-                
-                <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
-                
-                <p>Se ha reportado una nueva incidencia en el sistema:</p>
-                
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Descripción:</strong> {$data['descripcion']}</p>
-                    <p><strong>Prioridad:</strong> <span style='color: " . $this->getColorPrioridad($data['prioridad']) . ";'>" . strtoupper($data['prioridad']) . "</span></p>
-                    <p><strong>Reportado por:</strong> {$data['reportante']}</p>
-                </div>
-                
-                <p>Por favor, revisa y asigna un técnico para atender esta incidencia.</p>
-                
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
-                </p>
-            </div>
-        </body>
-        </html>
-        ";
-    }
-    
-    /**
-     * Generar mensaje HTML para incidencia crítica
-     */
-    private function generarMensajeIncidenciaCritica($data) {
-        return "
-        <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 2px solid #EF4444; border-radius: 10px;'>
-                <h2 style='color: #EF4444; border-bottom: 2px solid #EF4444; padding-bottom: 10px;'>
-                    URGENTE - Incidencia CRÍTICA
-                </h2>
-                
-                <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
-                
-                <div style='background: #FEE2E2; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 0; color: #991B1B;'><strong>ATENCIÓN: Se ha reportado una incidencia de prioridad CRÍTICA que requiere atención inmediata.</strong></p>
-                </div>
-                
-                <div style='background: #FEF3C7; padding: 15px; border-left: 4px solid #F59E0B; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Descripción:</strong> {$data['descripcion']}</p>
-                    <p><strong>Prioridad:</strong> <span style='color: #EF4444; font-weight: bold;'>CRÍTICA</span></p>
-                    <p><strong>Reportado por:</strong> {$data['reportante']}</p>
-                </div>
-                
-                <p style='font-weight: bold; color: #991B1B;'>Esta incidencia requiere atención inmediata. Por favor, asigna un técnico lo antes posible.</p>
-                
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
-                </p>
-            </div>
-        </body>
-        </html>
-        ";
     }
     
     /**
@@ -661,29 +649,48 @@ class AppEmailNotifier {
     private function generarMensajeAdminAsignacion($data) {
         return "
         <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
-                    Técnico Asignado a Incidencia
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    Técnico Asignado
                 </h2>
                 
                 <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
-                
                 <p>Se ha asignado un técnico a una incidencia:</p>
                 
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Descripción:</strong> {$data['descripcion']}</p>
-                    <p><strong>Prioridad:</strong> <span style='color: " . $this->getColorPrioridad($data['prioridad']) . ";'>" . strtoupper($data['prioridad']) . "</span></p>
-                    <p><strong>Reportado por:</strong> {$data['reportante']}</p>
-                    <p><strong>Técnico asignado:</strong> <span style='color: #0D9488; font-weight: bold;'>{$data['tecnico_nombre']}</span></p>
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Técnico:</strong></td>
+                            <td style='padding: 8px 0; color: #0D9488; font-weight: bold;'>{$data['tecnico_nombre']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Prioridad:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: " . $this->getColorPrioridad($data['prioridad']) . "; font-weight: bold;'>" . strtoupper($data['prioridad']) . "</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Reportado por:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['reportante']}</td>
+                        </tr>
+                    </table>
                 </div>
                 
-                <p>El técnico ha sido notificado y comenzará a trabajar en la incidencia.</p>
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Ver Incidencia</a>
+                </div>
                 
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
                 </p>
             </div>
         </body>
@@ -691,41 +698,61 @@ class AppEmailNotifier {
         ";
     }
     
-    /**
-     * Generar mensaje HTML para notificación de cambio de estado a admin
-     */
     private function generarMensajeAdminCambioEstado($data) {
         $estadoTexto = $this->formatearEstado($data['nuevo_estado']);
         $colorEstado = $this->getColorEstado($data['nuevo_estado']);
         
         return "
         <html>
-        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
-            <div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
-                <h2 style='color: #0D9488; border-bottom: 2px solid #0D9488; padding-bottom: 10px;'>
-                    Cambio de Estado en Incidencia
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    Cambio de Estado
                 </h2>
                 
                 <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
-                
                 <p>Un técnico ha actualizado el estado de una incidencia:</p>
                 
-                <div style='background: #F0FDFA; padding: 15px; border-left: 4px solid #0D9488; margin: 20px 0;'>
-                    <p><strong>ID:</strong> #{$data['id_incidencia']}</p>
-                    <p><strong>Título:</strong> {$data['titulo']}</p>
-                    <p><strong>Nuevo Estado:</strong> <span style='color: {$colorEstado}; font-weight: bold;'>{$estadoTexto}</span></p>
-                    <p><strong>Técnico:</strong> {$data['tecnico_nombre']}</p>
-                    " . ($data['comentario'] ? "<p><strong>Comentario:</strong><br>{$data['comentario']}</p>" : "") . "
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Nuevo Estado:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: {$colorEstado}; font-weight: bold; background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px;'>{$estadoTexto}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Técnico:</strong></td>
+                            <td style='padding: 8px 0; color: #0D9488;'>{$data['tecnico_nombre']}</td>
+                        </tr>
+                        " . ($data['comentario'] ? "
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Comentario:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-style: italic;'>{$data['comentario']}</td>
+                        </tr>" : "") . "
+                    </table>
                 </div>
                 
                 " . ($data['nuevo_estado'] === 'cerrada' ? "
-                <div style='background: #D1FAE5; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                    <p style='margin: 0;'><strong>✅ Esta incidencia ha sido cerrada.</strong></p>
+                <div style='background: #ECFDF5; padding: 15px; border-radius: 8px; border: 1px solid #A7F3D0; margin: 20px 0; color: #065F46;'>
+                    <p style='margin: 0; text-align: center;'><strong>✅ Incidencia Cerrada</strong></p>
                 </div>
                 " : "") . "
                 
-                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 12px;'>
-                    Este es un mensaje automático del Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Ver Detalles</a>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
                 </p>
             </div>
         </body>

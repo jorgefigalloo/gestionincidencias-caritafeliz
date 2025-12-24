@@ -31,7 +31,7 @@ function getJsonInput() {
     $data = json_decode($input);
     
     if (json_last_error() !== JSON_ERROR_NONE) {
-        sendResponse(400, array("message" => "JSON inválido: " . json_last_error_msg()));
+        sendResponse(400, array("message" => "JSON invÃ¡lido: " . json_last_error_msg()));
     }
     
     return $data;
@@ -45,7 +45,7 @@ try {
     $db = $database->getConnection();
     
     if (!$db) {
-        sendResponse(500, array("message" => "Error de conexión a la base de datos"));
+        sendResponse(500, array("message" => "Error de conexiÃ³n a la base de datos"));
     }
     
     $incidencia = new Incidencia($db);
@@ -54,7 +54,7 @@ try {
     $subtipoIncidencia = new SubtipoIncidencia($db); // NUEVO
     
 } catch (Exception $e) {
-    error_log("Error al inicializar conexión: " . $e->getMessage());
+    error_log("Error al inicializar conexiÃ³n: " . $e->getMessage());
     sendResponse(500, array("message" => "Error interno del servidor"));
 }
 
@@ -74,7 +74,7 @@ switch ($request_method) {
                     if ($stats !== false) {
                         sendResponse(200, array("stats" => $stats));
                     } else {
-                        sendResponse(500, array("message" => "Error al obtener estadísticas"));
+                        sendResponse(500, array("message" => "Error al obtener estadÃ­sticas"));
                     }
                     break;
                     
@@ -99,7 +99,7 @@ switch ($request_method) {
                         }
                         sendResponse(200, array("tecnicos" => $tecnicos_arr));
                     } catch (PDOException $e) {
-                        sendResponse(500, array("message" => "Error al obtener técnicos"));
+                        sendResponse(500, array("message" => "Error al obtener tÃ©cnicos"));
                     }
                     break;
 
@@ -173,7 +173,7 @@ switch ($request_method) {
                 case 'single':
                     $id = $_GET['id'] ?? 0;
                     if (!$id || !is_numeric($id)) {
-                        sendResponse(400, array("message" => "ID de incidencia inválido"));
+                        sendResponse(400, array("message" => "ID de incidencia invÃ¡lido"));
                     }
                     
                     $incidencia->id_incidencia = intval($id);
@@ -259,115 +259,62 @@ switch ($request_method) {
     case 'POST':
         try {
 
-            // Manejar acción de confirmación de solución
-            if ($action === 'confirmar_solucion') {
-                $data = getJsonInput();
-                
-                if (empty($data->id_incidencia) || !is_numeric($data->id_incidencia)) {
-                    sendResponse(400, array("message" => "ID de incidencia inválido"));
-                }
-                
-                if (empty($data->confirmacion) || !in_array($data->confirmacion, ['solucionado', 'no_solucionado'])) {
-                    sendResponse(400, array("message" => "Confirmación inválida"));
-                }
-                
-                try {
-                    if (!class_exists('IncidenciaNotificaciones')) {
-                        require_once '../models/IncidenciaExtensions.php';
-                    }
-                    $incExt = new IncidenciaNotificaciones($db);
-                    
-                    $resultado = $incExt->confirmarSolucion(
-                        intval($data->id_incidencia),
-                        $data->confirmacion,
-                        isset($data->comentario_usuario) ? trim($data->comentario_usuario) : null
-                    );
-                    
-                    if ($resultado) {
-                        sendResponse(200, array(
-                            "success" => true,
-                            "message" => "Confirmación registrada exitosamente"
-                        ));
-                    } else {
-                        sendResponse(500, array("message" => "Error al registrar la confirmación"));
-                    }
-                } catch (Exception $e) {
-                    error_log("Error en confirmar solución: " . $e->getMessage());
-                    sendResponse(500, array("message" => "Error al confirmar solución"));
-                }
-                break;
-            }
-
-            // Manejar acción de envío manual de email
-            if ($action === 'enviar_email_manual') {
-                $data = getJsonInput();
-                
-                if (empty($data->id_incidencia) || !is_numeric($data->id_incidencia)) {
-                    sendResponse(400, array("message" => "ID de incidencia inválido"));
-                }
-                
-                if (empty($data->asunto) || trim($data->asunto) === '') {
-                    sendResponse(400, array("message" => "El asunto es requerido"));
-                }
-                
-                if (empty($data->mensaje) || trim($data->mensaje) === '') {
-                    sendResponse(400, array("message" => "El mensaje es requerido"));
-                }
-                
-                try {
-                    if (!class_exists('IncidenciaEmailNotifier')) {
-                        require_once '../models/IncidenciaEmailNotifier.php';
-                    }
-                    $emailNotifier = new IncidenciaEmailNotifier($db);
-                    
-                    $enviado = $emailNotifier->enviarNotificacionManual(
-                        intval($data->id_incidencia),
-                        trim($data->asunto),
-                        trim($data->mensaje)
-                    );
-                    
-                    if ($enviado) {
-                        sendResponse(200, array(
-                            "success" => true,
-                            "message" => "Email enviado exitosamente"
-                        ));
-                    } else {
-                        sendResponse(500, array("message" => "No se pudo enviar el email. Verifique los logs."));
-                    }
-                } catch (Exception $e) {
-                    error_log("Error en envío manual de email: " . $e->getMessage());
-                    sendResponse(500, array("message" => "Error al enviar email"));
-                }
-                break;
-            }
-
-            $data = getJsonInput();
+                                // Manejar acciÃ³n de confirmaciÃ³n de soluciÃ³n
+                    if ($action === 'confirmar_solucion') {
+                        $data = getJsonInput();
+                        
+                        if (empty($data->id_incidencia) || !is_numeric($data->id_incidencia)) {
+                            sendResponse(400, array("message" => "ID de incidencia invÃ¡lido"));
+                        }
+                        
+                        if (empty($data->confirmacion) || !in_array($data->confirmacion, ['solucionado', 'no_solucionado'])) {
+                            sendResponse(400, array("message" => "ConfirmaciÃ³n invÃ¡lida"));
+                        }
+                        
+                        try {
+                            if (!class_exists('IncidenciaNotificaciones')) {
+    require_once '../models/IncidenciaExtensions.php';
+}
+                            $incExt = new IncidenciaNotificaciones($db);
+                            
+                            $resultado = $incExt->confirmarSolucion(
+                                intval($data->id_incidencia),
+                                $data->confirmacion,
+                                isset($data->comentario_usuario) ? trim($data->comentario_usuario) : null
+                            );
+                            
+                            if ($resultado) {
+                                sendResponse(200, array(
+                                    "success" => true,
+                                    "message" => "ConfirmaciÃ³n registrada exitosamente"
+                                ));
+                            } else {
 
             if (empty($data->titulo) || trim($data->titulo) === '') {
-                sendResponse(400, array("message" => "El título de la incidencia es requerido"));
+                sendResponse(400, array("message" => "El tÃ­tulo de la incidencia es requerido"));
             }
 
             if (empty($data->descripcion) || trim($data->descripcion) === '') {
-                sendResponse(400, array("message" => "La descripción de la incidencia es requerida"));
+                sendResponse(400, array("message" => "La descripciÃ³n de la incidencia es requerida"));
             }
 
             if (strlen(trim($data->titulo)) > 100) {
-                sendResponse(400, array("message" => "El título no puede exceder 100 caracteres"));
+                sendResponse(400, array("message" => "El tÃ­tulo no puede exceder 100 caracteres"));
             }
 
             $estados_validos = array('abierta', 'en_proceso', 'cerrada', 'cancelada');
             if (isset($data->estado) && !in_array($data->estado, $estados_validos)) {
-                sendResponse(400, array("message" => "Estado de incidencia inválido"));
+                sendResponse(400, array("message" => "Estado de incidencia invÃ¡lido"));
             }
 
             $prioridades_validas = array('baja', 'media', 'alta', 'critica');
             if (isset($data->prioridad) && !in_array($data->prioridad, $prioridades_validas)) {
-                sendResponse(400, array("message" => "Prioridad de incidencia inválida"));
+                sendResponse(400, array("message" => "Prioridad de incidencia invÃ¡lida"));
             }
 
             if (isset($data->email_reporta) && !empty($data->email_reporta) && 
                 !filter_var($data->email_reporta, FILTER_VALIDATE_EMAIL)) {
-                sendResponse(400, array("message" => "Email inválido"));
+                sendResponse(400, array("message" => "Email invÃ¡lido"));
             }
 
             $incidencia->titulo = trim($data->titulo);
@@ -381,7 +328,7 @@ switch ($request_method) {
             $incidencia->prioridad = isset($data->prioridad) ? $data->prioridad : 'media';
 
             if ($incidencia->create()) {
-                // Enviar notificación por email
+                // Enviar notificaciÃ³n por email
                 try {
                     // Obtener nombre del tipo de incidencia si existe
                     $tipoNombre = '';
@@ -415,13 +362,13 @@ switch ($request_method) {
                     $emailEnviado = $emailNotifier->enviarNotificacionNuevaIncidencia($emailData);
                     
                     if ($emailEnviado) {
-                        error_log("Notificación de email enviada exitosamente para nueva incidencia");
+                        error_log("NotificaciÃ³n de email enviada exitosamente para nueva incidencia");
                     } else {
-                        error_log("Advertencia: No se pudo enviar la notificación de email");
+                        error_log("Advertencia: No se pudo enviar la notificaciÃ³n de email");
                     }
                     
                 } catch (Exception $emailException) {
-                    error_log("Error al enviar email de notificación: " . $emailException->getMessage());
+                    error_log("Error al enviar email de notificaciÃ³n: " . $emailException->getMessage());
                 }
                 
                 // NUEVO: Notificar a administradores sobre nueva incidencia
@@ -440,30 +387,14 @@ switch ($request_method) {
                     ");
                     $stmtAdmins->execute();
                     
-                    // Obtener el ID de la incidencia recién creada
+                    // Obtener el ID de la incidencia reciÃ©n creada
                     $idIncidenciaCreada = $db->lastInsertId();
                     
                     // Notificar a cada administrador
                     while ($admin = $stmtAdmins->fetch(PDO::FETCH_ASSOC)) {
                         if ($incidencia->prioridad === 'critica') {
-                            // Notificación especial para incidencias críticas
+                            // NotificaciÃ³n especial para incidencias crÃ­ticas
                             $notifier->notificarIncidenciaCritica($idIncidenciaCreada, $admin['id_usuario']);
-                        } else {
-                            // Notificación normal
-                            $notifier->notificarNuevaIncidencia($idIncidenciaCreada, $admin['id_usuario']);
-                        }
-                    }
-                } catch (Exception $notifException) {
-                    error_log("Error al notificar a administradores: " . $notifException->getMessage());
-                    // No fallar la creación si falla la notificación
-                }
-                
-                sendResponse(201, array(
-                    "message" => "La incidencia ha sido creada exitosamente.",
-                    "success" => true
-                ));
-            } else {
-                sendResponse(500, array("message" => "No se pudo crear la incidencia. Inténtelo nuevamente."));
             }
         } catch (Exception $e) {
             error_log("Error en POST incidencias: " . $e->getMessage());
@@ -480,31 +411,31 @@ switch ($request_method) {
             }
 
             if (empty($data->id_incidencia) || !is_numeric($data->id_incidencia)) {
-                sendResponse(400, array("message" => "ID de incidencia inválido"));
+                sendResponse(400, array("message" => "ID de incidencia invÃ¡lido"));
             }
 
             if (isset($data->titulo) && strlen(trim($data->titulo)) > 100) {
-                sendResponse(400, array("message" => "El título no puede exceder 100 caracteres"));
+                sendResponse(400, array("message" => "El tÃ­tulo no puede exceder 100 caracteres"));
             }
 
             $estados_validos = array('abierta', 'en_proceso', 'en_verificacion', 'cerrada', 'cancelada');
             if (isset($data->estado) && !in_array($data->estado, $estados_validos)) {
-                sendResponse(400, array("message" => "Estado de incidencia inválido"));
+                sendResponse(400, array("message" => "Estado de incidencia invÃ¡lido"));
             }
 
             $prioridades_validas = array('baja', 'media', 'alta', 'critica');
             if (isset($data->prioridad) && !in_array($data->prioridad, $prioridades_validas)) {
-                sendResponse(400, array("message" => "Prioridad de incidencia inválida"));
+                sendResponse(400, array("message" => "Prioridad de incidencia invÃ¡lida"));
             }
 
             if (isset($data->email_reporta) && !empty($data->email_reporta) && 
                 !filter_var($data->email_reporta, FILTER_VALIDATE_EMAIL)) {
-                sendResponse(400, array("message" => "Email inválido"));
+                sendResponse(400, array("message" => "Email invÃ¡lido"));
             }
 
             $incidencia->id_incidencia = intval($data->id_incidencia);
             
-            // Obtener el estado y técnico anterior antes de actualizar
+            // Obtener el estado y tÃ©cnico anterior antes de actualizar
             $incidencia->readOne();
             $estadoAnterior = $incidencia->estado;
             $tecnicoAnterior = $incidencia->id_usuario_tecnico;
@@ -520,7 +451,7 @@ switch ($request_method) {
             $incidencia->email_reporta = isset($data->email_reporta) ? trim($data->email_reporta) : '';
 
             if ($incidencia->update()) {
-                // Si el estado cambió, enviar notificación
+                // Si el estado cambiÃ³, enviar notificaciÃ³n
                 if ($estadoAnterior !== $incidencia->estado) {
                     try {
                         if (!class_exists('AppEmailNotifier')) {
@@ -533,39 +464,27 @@ switch ($request_method) {
                             $incidencia->respuesta_solucion
                         );
                     } catch (Exception $notifException) {
-                        error_log("Error al enviar notificación de cambio de estado: " . $notifException->getMessage());
+                        error_log("Error al enviar notificaciÃ³n de cambio de estado: " . $notifException->getMessage());
+                        // No fallar la actualizaciÃ³n si la notificaciÃ³n falla
                     }
                     
-                    // NUEVO: Notificar a administradores sobre el cambio de estado
+                    // NUEVO: Enviar email automÃ¡tico al usuario
                     try {
-                        // Solo notificar si hay un técnico asignado (quien hizo el cambio)
-                        $idTecnicoAccion = $incidencia->id_usuario_tecnico; 
-                        
-                        if ($idTecnicoAccion) {
-                            if (!isset($notifier)) {
-                                if (!class_exists('AppEmailNotifier')) {
-                                    require_once '../models/EmailNotifier.php';
-                                }
-                                $notifier = new AppEmailNotifier($db);
-                            }
-                            $notifier->notificarAdminCambioEstado(
-                                intval($data->id_incidencia),
-                                $incidencia->estado,
-                                intval($idTecnicoAccion),
-                                $incidencia->respuesta_solucion
-                            );
-                        }
-                    } catch (Exception $adminException) {
-                        error_log("Error al notificar admin cambio estado: " . $adminException->getMessage());
+                        require_once '../models/IncidenciaEmailNotifier.php';
+                        $emailNotifier = new IncidenciaEmailNotifier($db);
+                        $emailNotifier->enviarActualizacionEstado(
+                            intval($data->id_incidencia),
+                            $incidencia->estado,
+                            $incidencia->respuesta_solucion
+                        );
+                    } catch (Exception $emailException) {
+                        error_log("Error al enviar email de actualizaciÃ³n: " . $emailException->getMessage());
+                        // No fallar la actualizaciÃ³n si el email falla
                     }
                 }
                 
-                // Si cambió el técnico asignado, notificar al nuevo técnico
-                // Usamos comparación no estricta (!=) o cast a int para evitar falsos positivos por tipos (string vs int)
-                $tecnicoAnteriorInt = $tecnicoAnterior !== null ? intval($tecnicoAnterior) : null;
-                $tecnicoNuevoInt = $incidencia->id_usuario_tecnico !== null ? intval($incidencia->id_usuario_tecnico) : null;
-
-                if ($tecnicoAnteriorInt !== $tecnicoNuevoInt && $tecnicoNuevoInt) {
+                // Si cambiÃ³ el tÃ©cnico asignado, notificar al nuevo tÃ©cnico
+                if ($tecnicoAnterior !== $incidencia->id_usuario_tecnico && $incidencia->id_usuario_tecnico) {
                     try {
                         if (!class_exists('AppEmailNotifier')) {
                             require_once '../models/EmailNotifier.php';
@@ -576,23 +495,8 @@ switch ($request_method) {
                             intval($incidencia->id_usuario_tecnico)
                         );
                     } catch (Exception $notifException) {
-                        error_log("Error al enviar notificación de asignación: " . $notifException->getMessage());
-                    }
-                    
-                    // NUEVO: Notificar a administradores sobre la asignación
-                    try {
-                        if (!isset($notifier)) {
-                            if (!class_exists('AppEmailNotifier')) {
-                                require_once '../models/EmailNotifier.php';
-                            }
-                            $notifier = new AppEmailNotifier($db);
-                        }
-                        $notifier->notificarAdminAsignacion(
-                            intval($data->id_incidencia),
-                            intval($incidencia->id_usuario_tecnico)
-                        );
-                    } catch (Exception $adminException) {
-                        error_log("Error al notificar admin asignación: " . $adminException->getMessage());
+                        error_log("Error al enviar notificaciÃ³n de asignaciÃ³n: " . $notifException->getMessage());
+                        // No fallar la actualizaciÃ³n si la notificaciÃ³n falla
                     }
                 }
                 
@@ -618,7 +522,7 @@ switch ($request_method) {
             }
 
             if (empty($data->id_incidencia) || !is_numeric($data->id_incidencia)) {
-                sendResponse(400, array("message" => "ID de incidencia inválido"));
+                sendResponse(400, array("message" => "ID de incidencia invÃ¡lido"));
             }
 
             $incidencia->id_incidencia = intval($data->id_incidencia);
@@ -638,7 +542,7 @@ switch ($request_method) {
         break;
 
     default:
-        sendResponse(405, array("message" => "Método no permitido"));
+        sendResponse(405, array("message" => "MÃ©todo no permitido"));
         break;
 }
 ?>
