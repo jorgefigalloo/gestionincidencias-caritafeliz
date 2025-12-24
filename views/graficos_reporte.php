@@ -36,6 +36,7 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         body { margin: 0; padding: 0; }
         .chart-container { position: relative; height: 300px; }
@@ -656,22 +657,161 @@ session_start();
                 return;
             }
             
-            let csv = 'ID,Título,Tipo,Subtipo,Estado,Prioridad,Fecha\n';
+            const wb = XLSX.utils.book_new();
             
-            filteredData.forEach(inc => {
-                csv += `${inc.id_incidencia},"${inc.titulo}","${inc.tipo_nombre || 'Sin tipo'}","${inc.subtipo_nombre || 'Sin subtipo'}",${inc.estado},${inc.prioridad},${inc.fecha_reporte}\n`;
+            // === HOJA 1: RESUMEN ===
+            const resumenData = [];
+            resumenData.push(['REPORTE DE INCIDENCIAS - SISTEMA DE GESTIÓN']);
+            resumenData.push([]);
+            resumenData.push(['Fecha de Generación:', new Date().toLocaleString('es-ES')]);
+            
+            const userSession = localStorage.getItem('user_session') || sessionStorage.getItem('user_session');
+            if (userSession) {
+                try {
+                    const session = JSON.parse(userSession);
+                    resumenData.push(['Generado por:', session.nombre_completo || session.username]);
+                } catch(e) {}
+            }
+            
+            resumenData.push([]);
+            resumenData.push(['FILTROS APLICADOS']);
+            resumenData.push(['─────────────────────────────────']);
+            
+            const fechaInicio = document.getElementById('fecha_inicio').value;
+            const fechaFin = document.getElementById('fecha_fin').value;
+            const estadoFiltro = document.getElementById('filtro_estado').value;
+            const prioridadFiltro = document.getElementById('filtro_prioridad').value;
+            const tipoFiltro = document.getElementById('filtro_tipo').value;
+            const subtipoFiltro = document.getElementById('filtro_subtipo').value;
+            
+            if (fechaInicio) resumenData.push(['Fecha Inicio:', fechaInicio]);
+            if (fechaFin) resumenData.push(['Fecha Fin:', fechaFin]);
+            if (estadoFiltro) resumenData.push(['Estado:', estadoFiltro.replace('_', ' ').toUpperCase()]);
+            if (prioridadFiltro) resumenData.push(['Prioridad:', prioridadFiltro.toUpperCase()]);
+            if (tipoFiltro) {
+                const tipoNombre = allTipos.find(t => t.id_tipo_incidencia == tipoFiltro)?.nombre || tipoFiltro;
+                resumenData.push(['Tipo:', tipoNombre]);
+            }
+            if (subtipoFiltro) {
+                const subtipoNombre = allSubtipos.find(s => s.id_subtipo_incidencia == subtipoFiltro)?.nombre || subtipoFiltro;
+                resumenData.push(['Subtipo:', subtipoNombre]);
+            }
+            
+            if (!fechaInicio && !fechaFin && !estadoFiltro && !prioridadFiltro && !tipoFiltro && !subtipoFiltro) {
+                resumenData.push(['Sin filtros específicos aplicados']);
+            }
+            
+            resumenData.push([]);
+            resumenData.push(['RESUMEN DE RESULTADOS']);
+            resumenData.push(['─────────────────────────────────']);
+            resumenData.push(['Total de Incidencias:', filteredData.length]);
+            
+            const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+            wsResumen['!cols'] = [{wch: 30}, {wch: 40}];
+            XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
+            
+            // === HOJA 2: ESTADÍSTICAS ===
+            const estadisticasData = [];
+            estadisticasData.push(['ESTADÍSTICAS DE INCIDENCIAS']);
+            estadisticasData.push([]);
+            
+            estadisticasData.push(['POR ESTADO']);
+            estadisticasData.push(['Estado', 'Cantidad', 'Porcentaje']);
+            const estadoCounts = {
+                'Abierta': filteredData.filter(d => d.estado === 'abierta').length,
+                'En Proceso': filteredData.filter(d => d.estado === 'en_proceso').length,
+                'En Verificación': filteredData.filter(d => d.estado === 'en_verificacion').length,
+                'Cerrada': filteredData.filter(d => d.estado === 'cerrada').length,
+                'Cancelada': filteredData.filter(d => d.estado === 'cancelada').length
+            };
+            
+            Object.entries(estadoCounts).forEach(([estado, count]) => {
+                if (count > 0) {
+                    const porcentaje = ((count / filteredData.length) * 100).toFixed(1) + '%';
+                    estadisticasData.push([estado, count, porcentaje]);
+                }
             });
             
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `incidencias_${Date.now()}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            estadisticasData.push([]);
+            estadisticasData.push(['POR PRIORIDAD']);
+            estadisticasData.push(['Prioridad', 'Cantidad', 'Porcentaje']);
+            const prioridadCounts = {
+                'Baja': filteredData.filter(d => d.prioridad === 'baja').length,
+                'Media': filteredData.filter(d => d.prioridad === 'media').length,
+                'Alta': filteredData.filter(d => d.prioridad === 'alta').length,
+                'Crítica': filteredData.filter(d => d.prioridad === 'critica').length
+            };
             
+            Object.entries(prioridadCounts).forEach(([prioridad, count]) => {
+                if (count > 0) {
+                    const porcentaje = ((count / filteredData.length) * 100).toFixed(1) + '%';
+                    estadisticasData.push([prioridad, count, porcentaje]);
+                }
+            });
+            
+            estadisticasData.push([]);
+            estadisticasData.push(['POR TIPO DE INCIDENCIA']);
+            estadisticasData.push(['Tipo', 'Cantidad', 'Porcentaje']);
+            const tipoCounts = {};
+            filteredData.forEach(inc => {
+                const tipo = inc.tipo_nombre || 'Sin tipo';
+                tipoCounts[tipo] = (tipoCounts[tipo] || 0) + 1;
+            });
+            
+            Object.entries(tipoCounts).forEach(([tipo, count]) => {
+                const porcentaje = ((count / filteredData.length) * 100).toFixed(1) + '%';
+                estadisticasData.push([tipo, count, porcentaje]);
+            });
+            
+            const wsEstadisticas = XLSX.utils.aoa_to_sheet(estadisticasData);
+            wsEstadisticas['!cols'] = [{wch: 25}, {wch: 12}, {wch: 12}];
+            XLSX.utils.book_append_sheet(wb, wsEstadisticas, 'Estadísticas');
+            
+            // === HOJA 3: DATOS DETALLADOS ===
+            const datosDetallados = [];
+            datosDetallados.push(['ID', 'Título', 'Descripción', 'Tipo', 'Subtipo', 'Estado', 'Prioridad', 'Fecha Reporte', 'Usuario Reporta', 'Email Reporta', 'Asignado A']);
+            
+            filteredData.forEach(inc => {
+                datosDetallados.push([
+                    inc.id_incidencia,
+                    inc.titulo || '',
+                    inc.descripcion || '',
+                    inc.tipo_nombre || 'Sin tipo',
+                    inc.subtipo_nombre || 'Sin subtipo',
+                    inc.estado ? inc.estado.replace('_', ' ').toUpperCase() : '',
+                    inc.prioridad ? inc.prioridad.toUpperCase() : '',
+                    inc.fecha_reporte || '',
+                    inc.nombre_reporta || inc.reporta_usuario || 'Sin usuario',
+                    inc.email_reporta || '',
+                    inc.tecnico_asignado || 'Sin asignar'
+                ]);
+            });
+            
+            const wsDatos = XLSX.utils.aoa_to_sheet(datosDetallados);
+            wsDatos['!cols'] = [
+                {wch: 8},  // ID
+                {wch: 30}, // Título
+                {wch: 40}, // Descripción
+                {wch: 20}, // Tipo
+                {wch: 20}, // Subtipo
+                {wch: 15}, // Estado
+                {wch: 12}, // Prioridad
+                {wch: 18}, // Fecha
+                {wch: 25}, // Usuario
+                {wch: 30}, // Email
+                {wch: 25}  // Asignado
+            ];
+            XLSX.utils.book_append_sheet(wb, wsDatos, 'Datos Detallados');
+            
+            const ahora = new Date();
+            const dia = String(ahora.getDate()).padStart(2, '0');
+            const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+            const anio = ahora.getFullYear();
+            const hora = String(ahora.getHours()).padStart(2, '0');
+            const minuto = String(ahora.getMinutes()).padStart(2, '0');
+            const nombreArchivo = `Reporte_Incidencias_${dia}-${mes}-${anio}_${hora}-${minuto}.xlsx`;
+            
+            XLSX.writeFile(wb, nombreArchivo);
             showToast('Excel exportado exitosamente', 'success');
         }
 
