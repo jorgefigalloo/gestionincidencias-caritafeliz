@@ -112,6 +112,42 @@ class AppEmailNotifier {
     }
     
     /**
+     * Enviar notificación al usuario cuando reporta una nueva incidencia
+     */
+    public function enviarNotificacionNuevaIncidencia($data) {
+        try {
+            if (empty($data['email_reporta'])) {
+                return false;
+            }
+            
+            $asunto = "Incidencia Registrada #{$data['id_incidencia']}: {$data['titulo']}"; // ID will be added in controller or we need to pass it
+            // Wait, the controller passes an array without ID in line 405. 
+            // But let's check the controller again.
+            // $emailData = array('titulo' => ..., 'descripcion' => ..., ...);
+            // It doesn't pass ID. 
+            // But wait, the controller has $incidencia->id (lastInsertId is not set in the object automatically by create() usually, but let's assume we can get it).
+            // Actually, in the controller: $idIncidenciaCreada = $db->lastInsertId(); is used LATER for admins.
+            // For the user notification (lines 404-415), it uses $emailData which DOES NOT have ID.
+            // I should update the controller to pass ID too.
+            
+            // For now, let's implement this method assuming data has what it needs or we adjust.
+            // The controller sends: titulo, descripcion, nombre_reporta, email_reporta, prioridad, tipo_nombre, subtipo_nombre.
+            
+            $asunto = "Incidencia Registrada: {$data['titulo']}";
+            $mensaje = $this->generarMensajeNuevaIncidenciaUsuario($data);
+            
+            // No registramos notificación en BD para el reporte inicial (o sí? el sistema original no lo hacía explícitamente en el bloque try-catch del controller)
+            // Pero mejor ser consistentes.
+            
+            return $this->enviarEmail($data['email_reporta'], $asunto, $mensaje);
+            
+        } catch (Exception $e) {
+            error_log("EmailNotifier::enviarNotificacionNuevaIncidencia: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Enviar notificación cuando el usuario confirma la solución
      */
     public function notificarConfirmacion($idIncidencia, $confirmacion, $comentarioUsuario = null) {
@@ -448,40 +484,7 @@ class AppEmailNotifier {
         return $colores[$prioridad] ?? '#6B7280';
     }
     
-    /**
-     * Enviar notificación cuando se crea una nueva incidencia
-     */
-    public function notificarNuevaIncidencia($idIncidencia, $idAdmin) {
-        try {
-            $stmt = $this->pdo->prepare("
-                SELECT i.*, 
-                       u.email as admin_email, 
-                       u.nombre_completo as admin_nombre,
-                       u.notificaciones_activas,
-                       COALESCE(ur.nombre_completo, i.nombre_reporta) as reportante
-                FROM incidencias i
-                LEFT JOIN usuarios ur ON i.id_usuario_reporta = ur.id_usuario
-                CROSS JOIN usuarios u
-                WHERE i.id_incidencia = ? AND u.id_usuario = ?
-            ");
-            $stmt->execute([$idIncidencia, $idAdmin]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$data || !$data['notificaciones_activas'] || !$data['admin_email']) {
-                return false;
-            }
-            
-            $asunto = "Nueva incidencia reportada #{$idIncidencia}: {$data['titulo']}";
-            $mensaje = $this->generarMensajeNuevaIncidencia($data);
-            
-            $this->registrarNotificacion($idIncidencia, $idAdmin, 'nueva_incidencia', $asunto, $mensaje);
-            return $this->enviarEmail($data['admin_email'], $asunto, $mensaje);
-            
-        } catch (Exception $e) {
-            error_log("EmailNotifier::notificarNuevaIncidencia: " . $e->getMessage());
-            return false;
-        }
-    }
+
     
     /**
      * Enviar notificación urgente cuando se crea una incidencia crítica
@@ -749,6 +752,241 @@ class AppEmailNotifier {
                 
                 <div style='text-align: center; margin-top: 25px;'>
                     <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Ver Detalles</a>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                </p>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+    
+    /**
+     * Generar mensaje para el usuario que reporta
+     */
+    public function notificarNuevaIncidenciaUsuario($idIncidencia, $titulo, $email, $nombre) {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT i.*, t.nombre as tipo_nombre
+                FROM incidencias i
+                LEFT JOIN tipos_incidencia t ON i.id_tipo_incidencia = t.id_tipo_incidencia
+                WHERE i.id_incidencia = ?
+            ");
+            $stmt->execute([$idIncidencia]);
+            $incidentData = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($incidentData) {
+                $incidentData['nombre_reporta'] = $nombre; // Ensure we use the passed name
+                $asunto = "Incidencia Registrada #{$idIncidencia}: {$titulo}";
+                $mensaje = $this->generarMensajeNuevaIncidenciaUsuario($incidentData);
+                return $this->enviarEmail($email, $asunto, $mensaje);
+            }
+            return false;
+        } catch (Exception $e) {
+            error_log("EmailNotifier::notificarNuevaIncidenciaUsuario: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Notificar a administradores sobre nueva incidencia
+     */
+    public function notificarNuevaIncidencia($idIncidencia, $titulo, $prioridad) {
+        try {
+            // Fetch full data for the email
+            $stmt = $this->pdo->prepare("
+                SELECT i.*, 
+                       COALESCE(u.nombre_completo, i.nombre_reporta) as reportante
+                FROM incidencias i
+                LEFT JOIN usuarios u ON i.id_usuario_reporta = u.id_usuario
+                WHERE i.id_incidencia = ?
+            ");
+            $stmt->execute([$idIncidencia]);
+            $incidentData = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$incidentData) return false;
+
+            // Get admins to notify
+            $stmt = $this->pdo->prepare("
+                SELECT u.id_usuario, u.email, u.nombre_completo
+                FROM usuarios u
+                INNER JOIN rol_usuario r ON u.ID_ROL_USUARIO = r.id_rol
+                WHERE r.nombre_rol = 'admin' 
+                AND u.notificaciones_activas = 1 
+                AND u.email IS NOT NULL
+                AND u.estado = 'activo'
+            ");
+            $stmt->execute();
+            $admins = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($admins)) return false;
+            
+            $asunto = "Nueva Incidencia #{$idIncidencia}: {$titulo}";
+            
+            foreach ($admins as $admin) {
+                $incidentData['admin_nombre'] = $admin['nombre_completo'];
+                $mensaje = $this->generarMensajeNuevaIncidencia($incidentData);
+                
+                $this->registrarNotificacion($idIncidencia, $admin['id_usuario'], 'nueva_incidencia', $asunto, $mensaje);
+                $this->enviarEmail($admin['email'], $asunto, $mensaje);
+            }
+            
+            // Also check for critical priority to send urgent notification
+            if ($prioridad === 'critica') {
+                foreach ($admins as $admin) {
+                    $this->notificarIncidenciaCritica($idIncidencia, $admin['id_usuario']);
+                }
+            }
+            
+            return true;
+        } catch (Exception $e) {
+            error_log("EmailNotifier::notificarNuevaIncidencia: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Generar mensaje para el usuario que reporta
+     */
+    private function generarMensajeNuevaIncidenciaUsuario($data) {
+        return "
+        <html>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    Incidencia Registrada
+                </h2>
+                
+                <p>Hola <strong>{$data['nombre_reporta']}</strong>,</p>
+                <p>Hemos recibido tu reporte de incidencia. Un técnico será asignado pronto.</p>
+                
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Prioridad:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: " . $this->getColorPrioridad($data['prioridad']) . "; font-weight: bold;'>" . strtoupper($data['prioridad']) . "</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Tipo:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>" . ($data['tipo_nombre'] ?? 'General') . "</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Descripción:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['descripcion']}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                </p>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+
+    /**
+     * Generar mensaje para admin (Nueva Incidencia)
+     */
+    private function generarMensajeNuevaIncidencia($data) {
+        return "
+        <html>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'>
+                <h2 style='color: #0D9488; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    Nueva Incidencia Reportada
+                </h2>
+                
+                <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
+                <p>Se ha registrado una nueva incidencia en el sistema:</p>
+                
+                <div style='background: #F8FAFC; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #334155; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Prioridad:</strong></td>
+                            <td style='padding: 8px 0;'>
+                                <span style='color: " . $this->getColorPrioridad($data['prioridad']) . "; font-weight: bold;'>" . strtoupper($data['prioridad']) . "</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Reportado por:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['reportante']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #64748B; vertical-align: top;'><strong>Descripción:</strong></td>
+                            <td style='padding: 8px 0; color: #334155;'>{$data['descripcion']}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #0D9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Asignar Técnico</a>
+                </div>
+                
+                <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>
+                    Sistema de Gestión de Incidencias - Clínica Carita Feliz
+                </p>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+
+    /**
+     * Generar mensaje para admin (Incidencia Crítica)
+     */
+    private function generarMensajeIncidenciaCritica($data) {
+        return "
+        <html>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f5; padding: 20px;'>
+            <div style='max-width: 600px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-left: 6px solid #EF4444;'>
+                <h2 style='color: #EF4444; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-top: 0;'>
+                    ⚠️ INCIDENCIA CRÍTICA
+                </h2>
+                
+                <p>Hola <strong>{$data['admin_nombre']}</strong>,</p>
+                <p>Se ha reportado una incidencia de prioridad <strong>CRÍTICA</strong> que requiere atención inmediata:</p>
+                
+                <div style='background: #FEF2F2; padding: 20px; border-radius: 8px; border: 1px solid #FECACA; margin: 20px 0;'>
+                    <table style='width: 100%; border-collapse: collapse;'>
+                        <tr>
+                            <td style='padding: 8px 0; color: #7F1D1D; width: 140px; vertical-align: top;'><strong>ID Incidencia:</strong></td>
+                            <td style='padding: 8px 0; color: #B91C1C; font-weight: bold;'>#{$data['id_incidencia']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #7F1D1D; vertical-align: top;'><strong>Título:</strong></td>
+                            <td style='padding: 8px 0; color: #1F2937;'>{$data['titulo']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #7F1D1D; vertical-align: top;'><strong>Reportado por:</strong></td>
+                            <td style='padding: 8px 0; color: #1F2937;'>{$data['reportante']}</td>
+                        </tr>
+                        <tr>
+                            <td style='padding: 8px 0; color: #7F1D1D; vertical-align: top;'><strong>Descripción:</strong></td>
+                            <td style='padding: 8px 0; color: #1F2937;'>{$data['descripcion']}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style='text-align: center; margin-top: 25px;'>
+                    <a href='https://gestion-incidencias-caritafeliz.wuaze.com/' style='background-color: #EF4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;'>Atender Inmediatamente</a>
                 </div>
                 
                 <p style='margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; color: #94a3b8; font-size: 12px; text-align: center;'>

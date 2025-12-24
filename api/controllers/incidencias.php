@@ -222,8 +222,8 @@ switch ($request_method) {
                                 "respuesta_solucion" => html_entity_decode($row['respuesta_solucion'] ?? ''),
                                 "id_tipo_incidencia" => $row['id_tipo_incidencia'],
                                 "tipo_nombre" => $row['tipo_nombre'],
-                                "id_subtipo_incidencia" => $row['id_subtipo_incidencia'], // NUEVO
-                                "subtipo_nombre" => $row['subtipo_nombre'] ?? null, // NUEVO
+                                "id_subtipo_incidencia" => $row['id_subtipo_incidencia'],
+                                "subtipo_nombre" => $row['subtipo_nombre'] ?? null,
                                 "id_usuario_reporta" => $row['id_usuario_reporta'],
                                 "nombre_reporta" => html_entity_decode($row['nombre_reporta'] ?? ''),
                                 "email_reporta" => $row['email_reporta'],
@@ -370,10 +370,11 @@ switch ($request_method) {
                 sendResponse(400, array("message" => "Email inválido"));
             }
 
-            $incidencia->titulo = trim($data->titulo);
-            $incidencia->descripcion = trim($data->descripcion);
+            // Asignar datos a la instancia
+            $incidencia->titulo = isset($data->titulo) ? trim($data->titulo) : '';
+            $incidencia->descripcion = isset($data->descripcion) ? trim($data->descripcion) : '';
             $incidencia->id_tipo_incidencia = isset($data->id_tipo_incidencia) ? intval($data->id_tipo_incidencia) : null;
-            $incidencia->id_subtipo_incidencia = isset($data->id_subtipo_incidencia) ? intval($data->id_subtipo_incidencia) : null; // NUEVO
+            $incidencia->id_subtipo_incidencia = isset($data->id_subtipo_incidencia) ? intval($data->id_subtipo_incidencia) : null;
             $incidencia->id_usuario_reporta = isset($data->id_usuario_reporta) ? intval($data->id_usuario_reporta) : null;
             $incidencia->nombre_reporta = isset($data->nombre_reporta) ? trim($data->nombre_reporta) : '';
             $incidencia->email_reporta = isset($data->email_reporta) ? trim($data->email_reporta) : '';
@@ -381,87 +382,41 @@ switch ($request_method) {
             $incidencia->prioridad = isset($data->prioridad) ? $data->prioridad : 'media';
 
             if ($incidencia->create()) {
-                // Enviar notificación por email
-                try {
-                    // Obtener nombre del tipo de incidencia si existe
-                    $tipoNombre = '';
-                    if ($incidencia->id_tipo_incidencia) {
-                        $tipoIncidencia->id_tipo_incidencia = $incidencia->id_tipo_incidencia;
-                        if ($tipoIncidencia->readOne()) {
-                            $tipoNombre = $tipoIncidencia->nombre;
+                // Obtener el ID de la incidencia creada
+                $incidencia->id_incidencia = $db->lastInsertId();
+
+                // Notificar al usuario (si hay email)
+                if (!empty($incidencia->email_reporta)) {
+                    try {
+                        if (!class_exists('AppEmailNotifier')) {
+                            require_once '../models/EmailNotifier.php';
                         }
+                        $notifier = new AppEmailNotifier($db);
+                        $notifier->notificarNuevaIncidenciaUsuario(
+                            $incidencia->id_incidencia,
+                            $incidencia->titulo,
+                            $incidencia->email_reporta,
+                            $incidencia->nombre_reporta
+                        );
+                    } catch (Exception $e) {
+                        error_log("Error al enviar notificación al usuario: " . $e->getMessage());
                     }
-                    
-                    // NUEVO: Obtener nombre del subtipo si existe
-                    $subtipoNombre = '';
-                    if ($incidencia->id_subtipo_incidencia) {
-                        $subtipoIncidencia->id_subtipo_incidencia = $incidencia->id_subtipo_incidencia;
-                        if ($subtipoIncidencia->readOne()) {
-                            $subtipoNombre = $subtipoIncidencia->nombre;
-                        }
-                    }
-                    
-                    $emailNotifier = new EmailNotifier();
-                    $emailData = array(
-                        'titulo' => $incidencia->titulo,
-                        'descripcion' => $incidencia->descripcion,
-                        'nombre_reporta' => $incidencia->nombre_reporta,
-                        'email_reporta' => $incidencia->email_reporta,
-                        'prioridad' => $incidencia->prioridad,
-                        'tipo_nombre' => $tipoNombre,
-                        'subtipo_nombre' => $subtipoNombre // NUEVO
-                    );
-                    
-                    $emailEnviado = $emailNotifier->enviarNotificacionNuevaIncidencia($emailData);
-                    
-                    if ($emailEnviado) {
-                        error_log("Notificación de email enviada exitosamente para nueva incidencia");
-                    } else {
-                        error_log("Advertencia: No se pudo enviar la notificación de email");
-                    }
-                    
-                } catch (Exception $emailException) {
-                    error_log("Error al enviar email de notificación: " . $emailException->getMessage());
                 }
-                
-                // NUEVO: Notificar a administradores sobre nueva incidencia
+
+                // Notificar a administradores
                 try {
-                    if (!class_exists('AppEmailNotifier')) {
-                        require_once '../models/EmailNotifier.php';
-                    }
-                    $notifier = new AppEmailNotifier($db);
-                    
-                    // Obtener todos los administradores activos
-                    $stmtAdmins = $db->prepare("
-                        SELECT u.id_usuario 
-                        FROM usuarios u 
-                        INNER JOIN rol_usuario r ON u.ID_ROL_USUARIO = r.id_rol 
-                        WHERE r.nombre_rol = 'admin' AND u.estado = 'activo'
-                    ");
-                    $stmtAdmins->execute();
-                    
-                    // Obtener el ID de la incidencia recién creada
-                    $idIncidenciaCreada = $db->lastInsertId();
-                    
-                    // Notificar a cada administrador
-                    while ($admin = $stmtAdmins->fetch(PDO::FETCH_ASSOC)) {
-                        if ($incidencia->prioridad === 'critica') {
-                            // Notificación especial para incidencias críticas
-                            $notifier->notificarIncidenciaCritica($idIncidenciaCreada, $admin['id_usuario']);
-                        } else {
-                            // Notificación normal
-                            $notifier->notificarNuevaIncidencia($idIncidenciaCreada, $admin['id_usuario']);
+                    if (!isset($notifier)) {
+                        if (!class_exists('AppEmailNotifier')) {
+                            require_once '../models/EmailNotifier.php';
                         }
+                        $notifier = new AppEmailNotifier($db);
                     }
-                } catch (Exception $notifException) {
-                    error_log("Error al notificar a administradores: " . $notifException->getMessage());
-                    // No fallar la creación si falla la notificación
+                    $notifier->notificarNuevaIncidencia($incidencia->id_incidencia, $incidencia->titulo, $incidencia->prioridad);
+                } catch (Exception $e) {
+                    error_log("Error al notificar admin nueva incidencia: " . $e->getMessage());
                 }
-                
-                sendResponse(201, array(
-                    "message" => "La incidencia ha sido creada exitosamente.",
-                    "success" => true
-                ));
+
+                sendResponse(201, array("message" => "Incidencia creada exitosamente", "id" => $incidencia->id_incidencia));
             } else {
                 sendResponse(500, array("message" => "No se pudo crear la incidencia. Inténtelo nuevamente."));
             }
