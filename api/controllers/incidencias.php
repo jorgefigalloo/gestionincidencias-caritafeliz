@@ -416,7 +416,7 @@ switch ($request_method) {
                     error_log("Error al notificar admin nueva incidencia: " . $e->getMessage());
                 }
 
-                sendResponse(201, array("message" => "Incidencia creada exitosamente", "id" => $incidencia->id_incidencia));
+                sendResponse(201, array("success" => true, "message" => "Incidencia creada exitosamente", "id" => $incidencia->id_incidencia));
             } else {
                 sendResponse(500, array("message" => "No se pudo crear la incidencia. Inténtelo nuevamente."));
             }

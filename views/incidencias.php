@@ -785,7 +785,7 @@
             });
             const result = await res.json();
 
-            if (result.success || result.message.includes('éxito')) {
+            if (res.ok || result.success || result.message.includes('exitosamente')) {
                 showToast('Incidencia guardada correctamente', 'success');
                 dom.modal.self.classList.add('hidden');
                 loadData();
