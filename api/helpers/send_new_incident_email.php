@@ -4,63 +4,50 @@
 
 function enviarEmailNuevaIncidencia($db, $incidenciaId, $titulo, $descripcion, $nombreReporta, $emailReporta, $prioridad, $idTipo, $idSubtipo) {
     try {
-        // Preparar datos para el email
-        $incidenciaData = array(
-            'id_incidencia' => $incidenciaId,
-            'titulo' => $titulo,
-            'descripcion' => $descripcion,
-            'nombre_reporta' => $nombreReporta,
-            'email_reporta' => $emailReporta,
-            'prioridad' => $prioridad,
-            'estado' => 'abierta'
-        );
+        // Usar AppEmailNotifier que maneja tanto emails como notificaciones en BD
+        if (!class_exists('AppEmailNotifier')) {
+            require_once __DIR__ . '/../models/EmailNotifier.php';
+        }
         
-        // Obtener nombre del tipo si existe
-        if ($idTipo) {
+        $notifier = new AppEmailNotifier($db);
+        $enviado = false;
+        
+        // 1. Notificar al usuario reportante (si tiene email)
+        if (!empty($emailReporta)) {
             try {
-                $queryTipo = "SELECT nombre FROM tipo_incidencia WHERE id_tipo_incidencia = :id_tipo";
-                $stmtTipo = $db->prepare($queryTipo);
-                $stmtTipo->bindParam(':id_tipo', $idTipo);
-                $stmtTipo->execute();
-                $tipoRow = $stmtTipo->fetch(PDO::FETCH_ASSOC);
-                if ($tipoRow) {
-                    $incidenciaData['tipo_nombre'] = $tipoRow['nombre'];
-                }
+                // Nota: AppEmailNotifier::notificarNuevaIncidenciaUsuario internamente busca la incidencia en BD
+                // para obtener tipo y subtipo, así que no necesitamos pasarlos explícitamente si ya están guardados
+                $notifier->notificarNuevaIncidenciaUsuario(
+                    $incidenciaId,
+                    $titulo,
+                    $emailReporta,
+                    $nombreReporta
+                );
             } catch (Exception $e) {
-                error_log("Error obteniendo tipo: " . $e->getMessage());
+                error_log("Error notificando usuario: " . $e->getMessage());
             }
         }
         
-        // Obtener nombre del subtipo si existe
-        if ($idSubtipo) {
-            try {
-                $querySubtipo = "SELECT nombre FROM subtipo_incidencia WHERE id_subtipo_incidencia = :id_subtipo";
-                $stmtSubtipo = $db->prepare($querySubtipo);
-                $stmtSubtipo->bindParam(':id_subtipo', $idSubtipo);
-                $stmtSubtipo->execute();
-                $subtipoRow = $stmtSubtipo->fetch(PDO::FETCH_ASSOC);
-                if ($subtipoRow) {
-                    $incidenciaData['subtipo_nombre'] = $subtipoRow['nombre'];
-                }
-            } catch (Exception $e) {
-                error_log("Error obteniendo subtipo: " . $e->getMessage());
+        // 2. Notificar a administradores (Email + Notificación en Dashboard)
+        try {
+            // Este método envía emails a todos los admins y registra la notificación en la tabla 'notificaciones'
+            $resultadoAdmin = $notifier->notificarNuevaIncidencia(
+                $incidenciaId, 
+                $titulo, 
+                $prioridad
+            );
+            
+            if ($resultadoAdmin) {
+                $enviado = true;
+                error_log("Notificaciones de nueva incidencia enviadas correctamente para ID: " . $incidenciaId);
             }
-        }
-
-        // Enviar notificación por email usando EmailNotifier
-        require_once '../../includes/email_notifier.php';
-        $emailNotifier = new EmailNotifier();
-        $resultado = $emailNotifier->enviarNotificacionNuevaIncidencia($incidenciaData);
-        
-        if ($resultado) {
-            error_log("Email de nueva incidencia enviado correctamente para ID: " . $incidenciaId);
-        } else {
-            error_log("No se pudo enviar email de nueva incidencia para ID: " . $incidenciaId);
+        } catch (Exception $e) {
+            error_log("Error notificando admins: " . $e->getMessage());
         }
         
-        return $resultado;
+        return $enviado;
     } catch (Exception $e) {
-        error_log("Error al enviar email de notificación: " . $e->getMessage());
+        error_log("Error general en enviarEmailNuevaIncidencia: " . $e->getMessage());
         return false;
     }
 }
