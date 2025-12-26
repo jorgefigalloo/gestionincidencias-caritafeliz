@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -134,7 +134,7 @@
                     <i class="fas fa-robot text-xs"></i>
                 </div>
                 <div class="bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-none p-4 shadow-sm max-w-[85%]">
-                    <p class="text-sm leading-relaxed">¡Hola! 👋 Soy tu asistente técnico. Puedo ayudarte con problemas de hardware, software, conectividad y más. ¿En qué te ayudo hoy?</p>
+                    <p class="text-sm leading-relaxed">¡Hola! �Y'< Soy tu asistente técnico. Puedo ayudarte con problemas de hardware, software, conectividad y más. ¿En qué te ayudo hoy?</p>
                 </div>
             </div>
         </div>
@@ -291,10 +291,10 @@
                                                 id="prioridad" 
                                                 name="prioridad"
                                                 class="w-full px-4 py-3 border-2 border-teal-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition duration-200 bg-teal-50/50">
-                                                <option value="baja">🟢 Baja - No es urgente</option>
-                                                <option value="media" selected>🟡 Media - Moderadamente urgente</option>
-                                                <option value="alta">🟠 Alta - Urgente</option>
-                                                <option value="critica">🔴 Crítica - Muy urgente</option>
+                                                <option value="baja">�YY� Baja - No es urgente</option>
+                                                <option value="media" selected>�YY� Media - Moderadamente urgente</option>
+                                                <option value="alta">�YY� Alta - Urgente</option>
+                                                <option value="critica">�Y"� Crítica - Muy urgente</option>
                                             </select>
                                         </div>
                                     </div>
@@ -385,5 +385,463 @@
             </div>
         </div>
 
-    <script src="assets/js/main.js"></script>
+    <script>
+            const INCIDENCIAS_API = 'api/controllers/incidencias.php';
+            const TIPOS_API = 'api/controllers/tipos_incidencias.php';
+            updateAuthUI(false);
+        }
+
+        // Cargar tipos de incidencia
+
+
+
+                    async function loadTiposIncidencia() {
+                        try {
+                            const response = await fetch(TIPOS_API);
+                            if (!response.ok) throw new Error('Error al cargar tipos');
+                            
+                            const result = await response.json();
+                            const tipoSelect = document.getElementById('tipo_incidencia');
+                            
+                            tipoSelect.innerHTML = '<option value="">Selecciona el tipo...</option>';
+                            
+                            if (result.records && result.records.length > 0) {
+                                result.records.forEach(tipo => {
+                                    const option = document.createElement('option');
+                                    option.value = tipo.id_tipo_incidencia;
+                                    option.textContent = tipo.nombre;
+                                    tipoSelect.appendChild(option);
+                                });
+                            }
+                            
+                            // NUEVO: Agregar event listener para cargar subtipos
+                            tipoSelect.addEventListener('change', loadSubtiposByTipo);
+                        } catch (error) {
+                            console.error('Error al cargar tipos:', error);
+                        }
+                    }
+
+                    // NUEVA FUNCI�"N: Cargar subtipos según el tipo seleccionado
+                    async function loadSubtiposByTipo() {
+                        const tipoSelect = document.getElementById('tipo_incidencia');
+                        const subtipoSelect = document.getElementById('subtipo_incidencia');
+                        const subtipoContainer = document.getElementById('subtipo-container');
+                        
+                        const tipoId = tipoSelect.value;
+                        
+                        // Si no hay tipo seleccionado, ocultar subtipos
+                        if (!tipoId) {
+                            subtipoContainer.classList.add('hidden');
+                            subtipoSelect.innerHTML = '<option value="">Selecciona primero un tipo...</option>';
+                            return;
+                        }
+                        
+                        try {
+                           // const response = await fetch(`../api/controllers/subtipos_incidencias.php?action=by_tipo&id_tipo=${tipoId}`);
+                           const response = await fetch(`api/controllers/subtipos_incidencias.php?action=by_tipo&id_tipo=${tipoId}`);
+                            const result = await response.json();
+                            
+                            subtipoSelect.innerHTML = '<option value="">Selecciona el subtipo...</option>';
+                            
+                            if (result.subtipos && result.subtipos.length > 0) {
+                                result.subtipos.forEach(subtipo => {
+                                    const option = document.createElement('option');
+                                    option.value = subtipo.id_subtipo_incidencia;
+                                    option.textContent = subtipo.nombre;
+                                    subtipoSelect.appendChild(option);
+                                });
+                                subtipoContainer.classList.remove('hidden');
+                            } else {
+                                subtipoContainer.classList.add('hidden');
+                                showToast('No hay subtipos disponibles para este tipo', 'info');
+                            }
+                        } catch (error) {
+                            console.error('Error al cargar subtipos:', error);
+                            subtipoContainer.classList.add('hidden');
+                        }
+                    }
+
+
+
+
+
+        // Cargar estadísticas básicas
+        async function loadStats() {
+            try {
+                const response = await fetch(`${INCIDENCIAS_API}?action=stats`);
+                if (!response.ok) throw new Error('Error al cargar estadísticas');
+                
+                const result = await response.json();
+                if (result.stats) {
+                    renderStats(result.stats);
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        function renderStats(stats) {
+            let abiertas = 0, proceso = 0, cerradas = 0;
+            
+            if (stats.por_estado) {
+                stats.por_estado.forEach(estado => {
+                    switch(estado.estado) {
+                        case 'abierta':
+                            abiertas = estado.count;
+                            break;
+                        case 'en_proceso':
+                            proceso = estado.count;
+                            break;
+                        case 'cerrada':
+                            cerradas = estado.count;
+                            break;
+                    }
+                });
+            }
+
+            statsSection.innerHTML = `
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-red-600 mb-2">${abiertas}</div>
+                    <div class="text-sm font-medium text-gray-600">Incidencias Abiertas</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-yellow-600 mb-2">${proceso}</div>
+                    <div class="text-sm font-medium text-gray-600">En Proceso</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-green-600 mb-2">${cerradas}</div>
+                    <div class="text-sm font-medium text-gray-600">Resueltas</div>
+                </div>
+            `;
+        }
+
+        // Toggle del formulario
+        toggleFormBtn.addEventListener('click', () => {
+            const isHidden = reportFormContainer.classList.contains('hidden');
+            
+            if (isHidden) {
+                reportFormContainer.classList.remove('hidden');
+                toggleText.textContent = '�O Cancelar Reporte';
+                reportFormContainer.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                reportFormContainer.classList.add('hidden');
+                toggleText.textContent = '�Y"� Reportar Nueva Incidencia';
+                hideMessage();
+                incidentForm.reset();
+            }
+        });
+
+        // Botón cancelar
+        cancelBtn.addEventListener('click', () => {
+            reportFormContainer.classList.add('hidden');
+            toggleText.textContent = '�Y"� Reportar Nueva Incidencia';
+            hideMessage();
+            incidentForm.reset();
+        });
+
+        // Event listeners de navegación
+        loginBtn.addEventListener('click', () => {
+            window.location.href = 'views/login.php';
+        });
+
+        dashboardBtn.addEventListener('click', () => {
+            if (currentUser && currentUser.rol === 'usuario') {
+                window.location.href = 'views/dashboard_usuario.php';
+            } else {
+                window.location.href = 'views/dashboard.php';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+                clearUserSession();
+                showToast('Sesión cerrada correctamente', 'success');
+            }
+        });
+
+        // Manejo del formulario
+                        incidentForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(incidentForm); // ESTA LÍNEA DEBE ESTAR AQUÍ
+                    const data = {
+                        titulo: formData.get('titulo').trim(),
+                        descripcion: formData.get('descripcion').trim(),
+                        nombre_reporta: formData.get('nombre_reporta').trim(),
+                        email_reporta: formData.get('email_reporta').trim(),
+                        id_tipo_incidencia: formData.get('tipo_incidencia') || null,
+                        id_subtipo_incidencia: formData.get('subtipo_incidencia') || null,
+                        prioridad: formData.get('prioridad') || 'media',
+                        estado: 'abierta',
+                        id_usuario_reporta: currentUser ? currentUser.id : null
+                    };
+
+            // Validaciones
+            if (!data.titulo) {
+                showMessage('El título es requerido');
+                return;
+            }
+            if (!data.descripcion) {
+                showMessage('La descripción es requerida');
+                return;
+            }
+            if (!data.nombre_reporta) {
+                showMessage('Tu nombre es requerido');
+                return;
+            }
+            if (!data.email_reporta) {
+                showMessage('Tu email es requerido');
+                return;
+            }
+
+            // Mostrar loading
+            submitText.textContent = '';
+            submitLoading.classList.remove('hidden');
+            submitBtn.disabled = true;
+            hideMessage();
+
+            try {
+                const response = await fetch(INCIDENCIAS_API, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showMessage('¡Incidencia reportada exitosamente! Te contactaremos pronto.', 'success');
+                    incidentForm.reset();
+                    showToast('Reporte enviado exitosamente', 'success');
+                    
+                    // Actualizar estadísticas
+                    loadStats();
+                    
+                    // Ocultar formulario después de 3 segundos
+                    setTimeout(() => {
+                        reportFormContainer.classList.add('hidden');
+                        toggleText.textContent = '�Y"� Reportar Nueva Incidencia';
+                        hideMessage();
+                    }, 3000);
+                } else {
+                    showMessage(result.message || 'Error al enviar el reporte. Inténtalo nuevamente.');
+                }
+            } catch (error) {
+                console.error('Error al enviar reporte:', error);
+                showMessage('Error de conexión. Por favor, inténtalo nuevamente.');
+            } finally {
+                // Ocultar loading
+                submitText.textContent = 'Enviar Reporte';
+                submitLoading.classList.remove('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Inicializar la aplicación
+        async function init() {
+            // Verificar sesión del usuario
+            checkUserSession();
+            
+            // Cargar datos iniciales
+            await Promise.all([
+                loadTiposIncidencia(),
+                loadStats()
+            ]);
+            
+            // Si hay usuario logueado, pre-llenar algunos campos
+            if (currentUser) {
+                const nombreInput = document.getElementById('nombre_reporta');
+                if (nombreInput && currentUser.nombre) {
+                    nombreInput.value = currentUser.nombre;
+                }
+            }
+        }
+
+        // Inicializar cuando la página esté cargada
+        window.addEventListener('load', init);
+
+        // Verificar sesión periódicamente (cada 5 minutos)
+        setInterval(checkUserSession, 5 * 60 * 1000);
+
+
+        // Chat Assistant Logic
+        
+
+                        // ============================================
+                // CHAT ASSISTANT FUNCTIONALITY
+                // ============================================
+
+
+
+                const CHAT_API = 'api/controllers/chat.php';
+
+
+                // Elementos del chat
+                const chatToggle = document.getElementById('chat-toggle');
+                const chatContainer = document.getElementById('chat-container');
+                const chatClose = document.getElementById('chat-close');
+                const chatMessages = document.getElementById('chat-messages');
+                const chatInput = document.getElementById('chat-input');
+                const chatSend = document.getElementById('chat-send');
+
+                let isTyping = false;
+
+                // Función para mostrar/ocultar el chat
+                function toggleChat() {
+                    chatContainer.classList.toggle('hidden');
+                    if (!chatContainer.classList.contains('hidden')) {
+                        chatInput.focus();
+                    }
+                }
+
+                // Función para cerrar el chat
+                function closeChat() {
+                    chatContainer.classList.add('hidden');
+                }
+
+                // Función para agregar mensaje al chat
+                function addChatMessage(message, isUser = false) {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `flex items-start space-x-3 ${isUser ? 'justify-end' : ''} animate-fade-in-up`;
+                    
+                    // Estilos de burbujas
+                    const userBubble = 'bg-teal-600 text-white rounded-2xl rounded-tr-none shadow-md';
+                    const botBubble = 'bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-none shadow-sm';
+                    
+                    messageDiv.innerHTML = `
+                        ${!isUser ? `<div class="w-8 h-8 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center flex-shrink-0 border border-teal-200">
+                            <i class="fas fa-robot text-xs"></i>
+                        </div>` : ''}
+                        
+                        <div class="${isUser ? userBubble : botBubble} p-4 max-w-[85%]">
+                            <p class="text-sm leading-relaxed whitespace-pre-wrap">${message}</p>
+                        </div>
+                        
+                        ${isUser ? `<div class="w-8 h-8 bg-gray-200 text-gray-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-xs"></i>
+                        </div>` : ''}
+                    `;
+                    
+                    chatMessages.appendChild(messageDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                // Función para mostrar indicador de escritura
+                function showTypingIndicator() {
+                    if (isTyping) return;
+                    isTyping = true;
+                    
+                    const typingDiv = document.createElement('div');
+                    typingDiv.id = 'typing-indicator';
+                    typingDiv.className = 'flex items-start space-x-2';
+                    typingDiv.innerHTML = `
+                        <div class="bg-gray-100 text-gray-600 p-2 rounded-full">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg p-3">
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    chatMessages.appendChild(typingDiv);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+
+                // Función para ocultar indicador de escritura
+                function hideTypingIndicator() {
+                    const typingIndicator = document.getElementById('typing-indicator');
+                    if (typingIndicator) {
+                        typingIndicator.remove();
+                    }
+                    isTyping = false;
+                }
+
+                // Función para enviar mensaje
+                async function sendChatMessage() {
+                    const message = chatInput.value.trim();
+                    if (!message) return;
+                    
+                    // Verificar si el usuario está logueado
+                    if (!currentUser) {
+                        addChatMessage('Debes iniciar sesión para usar el asistente.', false);
+                        return;
+                    }
+                    
+                    addChatMessage(message, true);
+                    chatInput.value = '';
+                    showTypingIndicator();
+                    
+                    try {
+                        const userSession = localStorage.getItem('user_session') || sessionStorage.getItem('user_session');
+                        
+                        if (!userSession) {
+                            hideTypingIndicator();
+                            addChatMessage('Error: No hay sesión activa. Por favor inicia sesión.', false);
+                            return;
+                        }
+                        
+                        const token = btoa(userSession);
+                        
+                        const response = await fetch(CHAT_API, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ message })
+                        });
+                        
+                        const responseText = await response.text();
+                        hideTypingIndicator();
+                        
+                        let result;
+                        try {
+                            result = JSON.parse(responseText);
+                        } catch (jsonError) {
+                            console.error('Error parseando JSON:', jsonError);
+                            console.error('Respuesta recibida:', responseText);
+                            addChatMessage('Error del servidor. Por favor, intenta más tarde.', false);
+                            return;
+                        }
+                        
+                        if (result.success) {
+                            addChatMessage(result.reply, false);
+                        } else {
+                            addChatMessage(result.message || 'Lo siento, no pude procesar tu mensaje.', false);
+                        }
+                    } catch (error) {
+                        hideTypingIndicator();
+                        console.error('Error en chat:', error);
+                        addChatMessage('Error de conexión. Por favor, intenta más tarde.', false);
+                    }
+                }
+
+                // Event listeners del chat
+                if (chatToggle) {
+                    chatToggle.addEventListener('click', toggleChat);
+                }
+
+                if (chatClose) {
+                    chatClose.addEventListener('click', closeChat);
+                }
+
+                if (chatSend) {
+                    chatSend.addEventListener('click', sendChatMessage);
+                }
+
+                if (chatInput) {
+                    chatInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendChatMessage();
+                        }
+                    });
+                }
+    </script>
 <?php include 'includes/footer.php'; ?>
